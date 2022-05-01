@@ -48,7 +48,7 @@ public class ErrorReport extends ErrorReportValve {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         try {
-            response.getReporter().write(JsonUtil.getInstance().toJson(errorResponse));
+            response.getReporter().write(JsonUtil.INSTANCE.toJson(errorResponse));
             response.finishResponse();
         } catch (IOException e) {
             log.error("Error report write failed: {}", e.getMessage());

@@ -34,7 +34,7 @@ public class RestExceptionHandler {
     public ErrorResponse requestBodyMissing(HttpServletRequest request) {
         HandlerMethod method = (HandlerMethod) request.getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler");
         String requestBody = Arrays.stream(method.getMethodParameters())
-                .map(m -> JsonUtil.getInstance().toJson(m.getParameterType()) + " " + m.getParameterName())
+                .map(m -> JsonUtil.INSTANCE.toJson(m.getParameterType()) + " " + m.getParameterName())
                 .collect(Collectors.joining(","));
         String msg = "Required request body is missing: " + requestBody;
         log.debug(msg);
