@@ -10,10 +10,5 @@ import java.util.Optional;
  * @date 2022/04/25
  */
 public interface UserRepository extends JpaRepository<User, Long> {
-    /**
-     * Find user by username.
-     * @param username Username to match.
-     * @return An {#Optional<User>} instance
-     */
     Optional<User> findByUsername(String username);
 }

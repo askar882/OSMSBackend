@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.config;
 
+import com.oas.osmsbackend.handler.ErrorReport;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardHost;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -24,13 +25,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> errorValveCustomizer() {
-        return (factory) -> {
-            factory.addContextCustomizers((context -> {
-                Container parent = context.getParent();
-                if (parent instanceof StandardHost) {
-                    ((StandardHost) parent).setErrorReportValveClass("com.oas.osmsbackend.handler.ErrorReport");
-                }
-            }));
-        };
+        return (factory) -> factory.addContextCustomizers((context -> {
+            Container parent = context.getParent();
+            if (parent instanceof StandardHost) {
+                ((StandardHost) parent).setErrorReportValveClass(ErrorReport.class.getName());
+            }
+        }));
     }
 }

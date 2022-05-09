@@ -2,11 +2,10 @@ package com.oas.osmsbackend.config;
 
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.security.JwtAuthenticationTokenFilter;
-import com.oas.osmsbackend.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -20,8 +19,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 /**
  * @author askar882
@@ -31,7 +30,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,12 +41,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling()
-                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    .authenticationEntryPoint(authenticationEntryPoint)
                 .and().authorizeRequests()
-                    .antMatchers("/auth/login").permitAll()
-                    .antMatchers("/api/auth/login").permitAll()
+                    .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .anyRequest().authenticated()
-                .and().addFilterBefore(new JwtAuthenticationTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .and().addFilterBefore(jwtAuthenticationTokenFilter, LogoutFilter.class);
     }
 
     @Bean

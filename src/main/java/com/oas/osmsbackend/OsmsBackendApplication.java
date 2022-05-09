@@ -31,16 +31,14 @@ public class OsmsBackendApplication {
             Arrays.asList(
                     Arrays.asList("admin", "admin", "USER,ADMIN"),
                     Arrays.asList("askar", "askar", "USER")
-            ).forEach(data -> {
-                userRepository.saveAndFlush(User.builder()
-                        .username(data.get(0))
-                        .password(passwordEncoder.encode(data.get(1)))
-                        .roles(
-                                Arrays.stream(data.get(2).split(","))
-                                        .map(s -> "ROLE_" + s)
-                                        .collect(Collectors.toList())
-                        ).build());
-            });
+            ).forEach(data -> userRepository.saveAndFlush(User.builder()
+                    .username(data.get(0))
+                    .password(passwordEncoder.encode(data.get(1)))
+                    .roles(
+                            Arrays.stream(data.get(2).split(","))
+                                    .map(s -> "ROLE_" + s)
+                                    .collect(Collectors.toList())
+                    ).build()));
             log.debug("Printing all users...");
             userRepository
                     .findAll()

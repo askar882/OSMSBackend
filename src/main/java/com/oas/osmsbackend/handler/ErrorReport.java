@@ -1,15 +1,12 @@
 package com.oas.osmsbackend.handler;
 
-import com.oas.osmsbackend.response.ErrorResponse;
-import com.oas.osmsbackend.util.JsonUtil;
+import com.oas.osmsbackend.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.tomcat.util.res.StringManager;
 import org.springframework.http.HttpStatus;
-
-import java.io.IOException;
 
 /**
  * @author askar882
@@ -25,6 +22,7 @@ public class ErrorReport extends ErrorReportValve {
                 || !response.setErrorReported()) {
             return;
         }
+        log.debug("Writing error report with status {}.", statusCode);
         String message = response.getMessage();
         if (message == null) {
             StringManager stringManager = StringManager.getManager(
@@ -41,17 +39,6 @@ public class ErrorReport extends ErrorReportValve {
             }
             response.setLocale(stringManager.getLocale());
         }
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(statusCode)
-                .message(message)
-                .build();
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        try {
-            response.getReporter().write(JsonUtil.INSTANCE.toJson(errorResponse));
-            response.finishResponse();
-        } catch (IOException e) {
-            log.error("Error report write failed: {}", e.getMessage());
-        }
+        ResponseUtil.INSTANCE.writeError(response, statusCode, message);
     }
 }

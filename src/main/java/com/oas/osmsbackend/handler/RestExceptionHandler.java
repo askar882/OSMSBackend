@@ -2,6 +2,7 @@ package com.oas.osmsbackend.handler;
 
 import com.oas.osmsbackend.response.ErrorResponse;
 import com.oas.osmsbackend.util.JsonUtil;
+import com.oas.osmsbackend.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -30,9 +31,9 @@ public class RestExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorResponse requestBodyMissing(HttpServletRequest request) {
-        HandlerMethod method = (HandlerMethod) request.getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler");
+        HandlerMethod method = RequestUtil.INSTANCE.getHandlerMethod(request);
         String requestBody = Arrays.stream(method.getMethodParameters())
                 .map(m -> JsonUtil.INSTANCE.toJson(m.getParameterType()) + " " + m.getParameterName())
                 .collect(Collectors.joining(","));
@@ -42,11 +43,9 @@ public class RestExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(Exception.class)
-    public ErrorResponse globalException(/*HttpServletRequest request, */Throwable ex) {
-        log.debug("globalException: {}", ex.getMessage());
+    @org.springframework.web.bind.annotation.ExceptionHandler(Throwable.class)
+    public ErrorResponse globalException(HttpServletRequest request, Throwable ex) {
+        log.debug("Exception '{}' for URI '{}'.", ex.getMessage(), request.getRequestURI());
         return new ErrorResponse(400, ex.getMessage());
     }
-
-//    public static
 }
