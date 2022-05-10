@@ -3,6 +3,8 @@ package com.oas.osmsbackend.config;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.security.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,9 +31,11 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    private final AppConfiguration appConfiguration;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -42,10 +46,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint)
-                .and().authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                    .anyRequest().authenticated()
                 .and().addFilterBefore(jwtAuthenticationTokenFilter, LogoutFilter.class);
+        var registry = http.authorizeRequests();
+        for (var matcher : appConfiguration.getIgnoredUrls()) {
+            String url = matcher.getUrl();
+            HttpMethod method = matcher.getMethod();
+            log.debug("Ignored {} request on '{}'.", method == null ? "all" : method.name(), url);
+            if (method != null) {
+                registry.antMatchers(method, url).permitAll();
+            } else {
+                registry.antMatchers(url).permitAll();
+            }
+        }
+        registry.anyRequest().authenticated();
     }
 
     @Bean
