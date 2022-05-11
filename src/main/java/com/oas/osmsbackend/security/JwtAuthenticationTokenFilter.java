@@ -85,6 +85,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 return new AntPathRequestMatcher(pattern, method.name());
             }
             return new AntPathRequestMatcher(pattern);
-        }).anyMatch(matcher -> matcher.matches(request));
+        }).noneMatch(matcher -> matcher.matches(request));
     }
 }
