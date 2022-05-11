@@ -1,8 +1,10 @@
 package com.oas.osmsbackend.controller;
 
 import com.oas.osmsbackend.domain.AuthenticationRequest;
+import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
+import com.oas.osmsbackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @PostMapping("login")
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,6 +45,15 @@ public class AuthController {
         String token = jwtTokenProvider.createToken(authentication);
         return new DataResponse() {{
                 put("token", token);
+        }};
+    }
+
+    @PostMapping("register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DataResponse register(@RequestBody AuthenticationRequest authenticationRequest) {
+        User user = userService.register(authenticationRequest);
+        return new DataResponse() {{
+            put("user", user.toString());
         }};
     }
 
