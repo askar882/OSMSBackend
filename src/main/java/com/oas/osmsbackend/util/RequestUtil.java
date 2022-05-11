@@ -2,7 +2,7 @@ package com.oas.osmsbackend.util;
 
 import com.oas.osmsbackend.domain.User;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,11 +48,19 @@ public enum RequestUtil {
         return (HandlerMethod) request.getAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE);
     }
 
-    public boolean isSelf(Long id, UserDetails userDetails) {
-        if (!(userDetails instanceof User)) {
-            return false;
+    /**
+     * TODO: 替代
+     * @param id
+     * @param principal
+     * @return
+     */
+    public void checkSelf(Long id, Object principal) {
+        if (!(principal instanceof User)) {
+            return;
         }
-        User user = (User) userDetails;
-        return id.equals(user.getId());
+        User user = (User) principal;
+        if (!id.equals(user.getId())) {
+            throw new AccessDeniedException("Access denied.");
+        }
     }
 }

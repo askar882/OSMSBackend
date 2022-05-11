@@ -32,4 +32,12 @@ public class UserService {
         log.debug("Registered user {}.", user);
         return userRepository.saveAndFlush(user);
     }
+
+    public User updateUser(User user) {
+        return userRepository.saveAndFlush(user);
+    }
+
+    public User patchUser(User user) {
+        return userRepository.saveAndFlush(user);
+    }
 }
