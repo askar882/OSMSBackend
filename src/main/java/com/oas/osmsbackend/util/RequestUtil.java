@@ -1,6 +1,8 @@
 package com.oas.osmsbackend.util;
 
+import com.oas.osmsbackend.domain.User;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,10 +40,19 @@ public enum RequestUtil {
 
     /**
      * 从{@link HttpServletRequest}对象获取处理该请求的方法{@link HandlerMethod}对象。
+     *
      * @param request 获取方法的{@link HttpServletRequest}对象。
      * @return 处理请求的 {@link HandlerMethod}对象。
      */
     public HandlerMethod getHandlerMethod(HttpServletRequest request) {
         return (HandlerMethod) request.getAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE);
+    }
+
+    public boolean isSelf(Long id, UserDetails userDetails) {
+        if (!(userDetails instanceof User)) {
+            return false;
+        }
+        User user = (User) userDetails;
+        return id.equals(user.getId());
     }
 }
