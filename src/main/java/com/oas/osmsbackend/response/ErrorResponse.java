@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
+ * 错误响应数据。
  * @author askar882
  * @date 2022/04/20
  */

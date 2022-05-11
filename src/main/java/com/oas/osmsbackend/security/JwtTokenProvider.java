@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
+ * JWT验证提供器。
  * @author askar882
  * @date 2022/03/31
  */
