@@ -1,16 +1,19 @@
 package com.oas.osmsbackend.security;
 
+import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.util.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -29,9 +32,11 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JwtTokenProvider {
+    private final UserRepository userRepository;
     private final SecretKey secretKey;
 
-    public JwtTokenProvider() {
+    public JwtTokenProvider(UserRepository userRepository) {
+        this.userRepository = userRepository;
         String secret = Base64.getEncoder().encodeToString(Constants.JWT_SECRET.getBytes());
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
@@ -56,16 +61,24 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) throws BadCredentialsException {
+        if (!validateToken(token)) {
+            throw new BadCredentialsException("JWT token validation failed.");
+        }
         Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token).getBody();
         Object authoritiesClaim = claims.get(Constants.AUTHORITIES_KEY);
         Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES
                 : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
-        User principal = new User(claims.getSubject(), "", authorities);
+        User principal = userRepository.findOne(Example.of(User.builder()
+                        .username(claims.getSubject())
+                        .roles(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                        .creationTime(null)
+                        .build()))
+                .orElseThrow(() -> new BadCredentialsException("Bad JWT token."));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(String token) {
+    private boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(this.secretKey).build()
                     .parseClaimsJws(token);

@@ -6,7 +6,9 @@ import com.oas.osmsbackend.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -57,18 +59,24 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (!StringUtils.hasText(header) || !header.startsWith(Constants.BEARER_TOKEN)) {
             ResponseUtil.INSTANCE.writeError(
                     response,
-                    401,
+                    HttpStatus.UNAUTHORIZED.value(),
                     "JWT authentication header check failed.");
             return;
         }
         String token = header.substring(7);
         log.info("Extracted token: '{}'", token);
-        if (jwtTokenProvider.validateToken(token)) {
+        try {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-                log.debug("Authenticated.");
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            log.debug("Authenticated.");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (BadCredentialsException ex) {
+            ResponseUtil.INSTANCE.writeError(
+                    response,
+                    HttpStatus.UNAUTHORIZED.value(),
+                    ex.getMessage()
+            );
+            log.debug("JWT token authentication failed: {}", ex.getMessage());
+            return;
         }
         chain.doFilter(request, response);
     }
