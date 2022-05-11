@@ -49,13 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().addFilterBefore(jwtAuthenticationTokenFilter, LogoutFilter.class);
         var registry = http.authorizeRequests();
         for (var matcher : appConfiguration.getIgnoredUrls()) {
-            String url = matcher.getUrl();
+            String pattern = matcher.getPattern();
             HttpMethod method = matcher.getMethod();
-            log.debug("Ignored {} request on '{}'.", method == null ? "all" : method.name(), url);
+            log.debug("Ignored {} request on '{}'.", method == null ? "all" : method.name(), pattern);
             if (method != null) {
-                registry.antMatchers(method, url).permitAll();
+                registry.antMatchers(method, pattern).permitAll();
             } else {
-                registry.antMatchers(url).permitAll();
+                registry.antMatchers(pattern).permitAll();
             }
         }
         registry.anyRequest().authenticated();

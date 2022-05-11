@@ -3,6 +3,7 @@ package com.oas.osmsbackend.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -29,6 +30,7 @@ public class AppConfiguration {
 
     /**
      * URL资源匹配配置类。
+     * TODO: 使用{@link AntPathRequestMatcher}代替。
      */
     @Data
     public static class MatcherConfig {
@@ -36,7 +38,7 @@ public class AppConfiguration {
          * 匹配的URL，不可为空。
          */
         @NotNull
-        private String url;
+        private String pattern;
         /**
          * 匹配的HTTP方法。
          */
