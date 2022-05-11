@@ -7,11 +7,9 @@ import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.service.UserService;
-import com.oas.osmsbackend.util.RequestUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -57,8 +55,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @IsSelf
-    public DataResponse getUser(@PathVariable Long userId, Authentication authentication) throws AccountNotFoundException {
-        RequestUtil.INSTANCE.checkSelf(userId, authentication.getPrincipal());
+    public DataResponse getUser(@PathVariable Long userId) throws AccountNotFoundException {
         return new DataResponse() {{
             put("user", userRepository.findById(userId).orElseThrow(() -> new AccountNotFoundException("Not found")));
         }};
@@ -66,24 +63,26 @@ public class UserController {
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public DataResponse updateUser(@PathVariable Long userId, @RequestBody User user, Authentication authentication) {
-        RequestUtil.INSTANCE.checkSelf(userId, authentication.getPrincipal());
+    @IsSelf
+    public DataResponse updateUser(@PathVariable Long userId, @RequestBody User user) {
+        // FIXME: Implement.
         return new DataResponse() {{
-            put("user", userService.updateUser(user));
+            put("user", userRepository.saveAndFlush(user));
         }};
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public String deleteUser(@PathVariable Long userId) {
+    @IsSelf
+    public void deleteUser(@PathVariable Long userId) {
         userRepository.deleteById(userId);
-        return "";
     }
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public DataResponse patchUser(@PathVariable Long userId, @RequestBody User user, Authentication authentication) {
-        RequestUtil.INSTANCE.checkSelf(userId, authentication.getPrincipal());
+    @IsSelf
+    public DataResponse patchUser(@PathVariable Long userId, @RequestBody User user) {
+        // TODO: Implement.
         return new DataResponse() {{
             put("user", userService.patchUser(user));
         }};

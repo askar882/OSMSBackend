@@ -28,7 +28,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public ErrorResponse handle401(AuthenticationException ex) {
-        log.debug("Authentication failed: {}", ex.getMessage());
+        log.debug("Authentication failed: '{}'.", ex.getMessage());
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
 
@@ -47,21 +47,21 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Throwable.class)
     public ErrorResponse globalException(HttpServletRequest request, Throwable ex) {
-        log.debug("Exception '{}' for URI '{}'.", ex.getMessage(), request.getRequestURI());
+        log.debug("Exception '{}' for URI '{}'.", ex, request.getRequestURI());
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EntityExistsException.class)
     public ErrorResponse entityExists(HttpServletRequest request, Throwable ex) {
-        log.debug("Exception '{}' for URI '{}'.", ex.getMessage(), request.getRequestURI());
+        log.debug("EntityExistsException '{}' for URI '{}'.", ex.getMessage(), request.getRequestURI());
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public ErrorResponse accessDenied(HttpServletRequest request, Throwable ex) {
-        log.debug("Access denied('{}') for URI '{}'.", ex.getMessage(), request.getRequestURI());
+        log.debug("Access denied '{}' for URI '{}'.", ex, request.getRequestURI());
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
     }
 }
