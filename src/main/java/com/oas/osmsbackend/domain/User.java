@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +49,7 @@ public class User implements UserDetails {
 
     @NotNull
     @ToString.Exclude
+    @JsonIgnore
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -60,6 +62,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Date creationTime = new Date();
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles

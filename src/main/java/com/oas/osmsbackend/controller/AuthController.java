@@ -53,7 +53,7 @@ public class AuthController {
     public DataResponse register(@RequestBody AuthenticationRequest authenticationRequest) {
         User user = userService.register(authenticationRequest);
         return new DataResponse() {{
-            put("user", user.toString());
+            put("user", user);
         }};
     }
 
