@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,21 @@ public enum JsonUtil {
             log.error("Failed to serialize {}. Error: {}", object, e.getMessage());
             return "Failed to serialize " + object;
         }
+    }
+
+    /**
+     * 反序列化JSON字符串。
+     * @param jsonString JSON字符串。
+     * @param valueType 反序列化后的结果类型。
+     * @return 反序列化结果，失败返回{@code null}。
+     */
+    public <T> T fromJson(String jsonString, Class<T> valueType) {
+        try {
+            return objectMapper.reader().readValue(jsonString, valueType);
+        } catch (IOException e) {
+            log.debug("Failed to deserialize JSON string: '{}'.", jsonString);
+        }
+        return null;
     }
 
 }

@@ -1,9 +1,17 @@
 package com.oas.osmsbackend.util;
 
+import com.oas.osmsbackend.domain.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static javax.servlet.RequestDispatcher.ERROR_STATUS_CODE;
 import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE;
@@ -13,6 +21,7 @@ import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_HANDL
  * @author askar882
  * @date 2022/05/05
  */
+@Slf4j
 public enum RequestUtil {
     /**
      * 单例模式实例。
@@ -32,6 +41,7 @@ public enum RequestUtil {
         try {
             return HttpStatus.valueOf(statusCode);
         } catch (Exception ex) {
+            log.debug("No such status code: {}.", statusCode);
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
@@ -44,5 +54,27 @@ public enum RequestUtil {
      */
     public HandlerMethod getHandlerMethod(HttpServletRequest request) {
         return (HandlerMethod) request.getAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE);
+    }
+
+    /**
+     * 获取当前用户。
+     * @return 当前用户。
+     */
+    public User currentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    /**
+     * 读取请求内容。
+     * @param request {@link HttpServletRequest}实例。
+     * @return 请求内容，失败时返回{@code null}。
+     */
+    public String readContent(HttpServletRequest request) {
+        try {
+            return request.getReader().lines().collect(Collectors.joining());
+        } catch (IOException e) {
+            log.debug("Failed to read request content: {}", e.getMessage());
+        }
+        return null;
     }
 }
