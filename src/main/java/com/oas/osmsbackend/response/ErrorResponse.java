@@ -16,8 +16,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 @JsonRootName("error")
-@JsonTypeName("error")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
+//@JsonTypeName("error")
+//@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class ErrorResponse {
     private int status;
     private String message;

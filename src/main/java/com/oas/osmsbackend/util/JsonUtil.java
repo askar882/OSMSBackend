@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.util;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -55,11 +56,24 @@ public enum JsonUtil {
 
     /**
      * 序列化{@link Object}对象。
+     * 若传入的对象的类已经被{@link JsonTypeInfo}标注，且{@link JsonTypeInfo#use()}的值为{@link JsonTypeInfo.As#WRAPPER_OBJECT}，
+     * 则不启用{@link ObjectWriter}的{@link SerializationFeature#WRAP_ROOT_VALUE}特性。
+     *
      * @param object 序列化的对象。
      * @param wrapRoot 是否包裹{@code ROOT_VALUE}。
      * @return 序列化的JSON字符串。
      */
     public String toJson(Object object, boolean wrapRoot) {
+        if (object.getClass().isAnnotationPresent(JsonTypeInfo.class)) {
+            JsonTypeInfo jsonTypeInfo = object.getClass().getAnnotation(JsonTypeInfo.class);
+            if (JsonTypeInfo.As.WRAPPER_OBJECT.equals(jsonTypeInfo.include())) {
+                log.debug(
+                        "toJson: JsonTypeInfo annotation with WRAPPER_OBJECT inclusion found on class '{}', disabling wrapRoot.",
+                        object.getClass().getName()
+                );
+                wrapRoot = false;
+            }
+        }
         ObjectWriter objectWriter = objectMapper.writer();
         if (wrapRoot) {
             objectWriter = objectWriter.with(SerializationFeature.WRAP_ROOT_VALUE);
