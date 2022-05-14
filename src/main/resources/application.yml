@@ -18,16 +18,16 @@ spring:
       hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
   jackson:
     serialization:
-      wrap_root_value: true
+      wrap_root_value: false # 会影响Swagger获取配置swagger-config。
 logging:
   level:
     org.springframework: INFO
     org.springframework.security: TRACE
     org.springframework.boot: INFO
-    org.junit: INFO
     com.oas: DEBUG
-
 app:
+  version: 1.0.0
+  description: @project.description@
   ignoredUrls:
     -
       pattern: /auth/login
@@ -35,3 +35,14 @@ app:
     -
       pattern: /auth/register
       method: POST
+    -
+      pattern: /docs/**
+      method: GET
+    -
+      pattern: /docs.*
+      method: GET
+springdoc:
+  api-docs:
+    path: /docs
+  swagger-ui:
+    path: /docs/swagger
