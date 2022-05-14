@@ -19,12 +19,29 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    /**
+     * 设置默认响应内容类型为JSON。
+     * @param configurer {@link ContentNegotiationConfigurer}实例。
+     */
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.ignoreAcceptHeader(true);
         configurer.defaultContentType(MediaType.APPLICATION_JSON);
     }
 
+    /**
+     * 添加自定义Handler拦截器，实现权限验证。
+     * @param registry 拦截器注册表。
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AuthorizationHandlerInterceptor());
+    }
+
+    /**
+     * 自定义Tomcat默认错误页。
+     * @return Tomcat错误页自定义Bean。
+     */
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> errorValveCustomizer() {
         return (factory) -> factory.addContextCustomizers((context -> {
@@ -33,10 +50,5 @@ public class WebConfig implements WebMvcConfigurer {
                 ((StandardHost) parent).setErrorReportValveClass(ErrorReport.class.getName());
             }
         }));
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthorizationHandlerInterceptor());
     }
 }
