@@ -16,6 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 自定义拦截器，用于实现权限验证。
@@ -26,13 +27,15 @@ import java.util.Arrays;
 @Slf4j
 public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             if (handleHasRole(handlerMethod)) {
                 return true;
             }
-            handleCurrentUser(handlerMethod, request);
+            if (handleCurrentUser(handlerMethod, request)) {
+                log.debug("Current user check successful.");
+            }
         }
         return true;
     }
@@ -83,11 +86,11 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
      */
     private boolean handleCurrentUser(HandlerMethod method, HttpServletRequest request) throws AccessDeniedException {
         if (method.hasMethodAnnotation(CurrentUser.class)) {
-            Long userId = getUserId(request);
-            if (userId != null) {
+            Optional<Long> userId = getUserId(request);
+            if (userId.isPresent()) {
                 log.debug("User ID extracted from request: '{}'.", userId);
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (!userId.equals(((User) authentication.getPrincipal()).getId())) {
+                if (!userId.get().equals(((User) authentication.getPrincipal()).getId())) {
                     throw new AccessDeniedException("Unauthorized user.");
                 }
                 log.debug("Granted access.");
@@ -101,25 +104,23 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
 
     /**
      * 从请求体或参数获取用户ID。
+     *
      * @param request 请求。
      * @return 用户ID。
      */
-    private Long getUserId(HttpServletRequest request) {
+    private Optional<Long> getUserId(HttpServletRequest request) {
         String path = request.getServletPath();
         try {
-            return Long.valueOf(path.substring(path.lastIndexOf('/') + 1));
+            return Optional.of(Long.valueOf(path.substring(path.lastIndexOf('/') + 1)));
         } catch (NumberFormatException ex) {
             log.debug("No userId extracted from path '{}'.", path);
         }
-        String content = RequestUtil.INSTANCE.readContent(request);
-        if (StringUtils.hasLength(content)) {
+        Optional<String> content = RequestUtil.INSTANCE.readContent(request);
+        if (!content.isPresent() || !StringUtils.hasLength(content.get())) {
             log.debug("Empty request body.");
-            return null;
+            return Optional.empty();
         }
-        User user = JsonUtil.INSTANCE.fromJson(content, User.class);
-        if (user != null) {
-            return user.getId();
-        }
-        return null;
+        return JsonUtil.INSTANCE.fromJson(content.get(), User.class)
+                .map(User::getId);
     }
 }

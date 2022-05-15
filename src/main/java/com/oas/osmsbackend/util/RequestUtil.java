@@ -7,8 +7,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +16,7 @@ import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_HANDL
 
 /**
  * {@link HttpServletRequest}工具类。
+ *
  * @author askar882
  * @date 2022/05/05
  */
@@ -30,6 +29,7 @@ public enum RequestUtil {
 
     /**
      * 从{@link HttpServletRequest}对象获取HTTP状态码，返回对应的{@link HttpStatus}对象。
+     *
      * @param request 获取状态的{@link HttpServletRequest}对象。
      * @return 获取的HTTP状态码对应的 {@link HttpStatus}对象。
      */
@@ -58,6 +58,7 @@ public enum RequestUtil {
 
     /**
      * 获取当前用户。
+     *
      * @return 当前用户。
      */
     public User currentUser() {
@@ -66,15 +67,16 @@ public enum RequestUtil {
 
     /**
      * 读取请求内容。
+     *
      * @param request {@link HttpServletRequest}实例。
      * @return 请求内容，失败时返回{@code null}。
      */
-    public String readContent(HttpServletRequest request) {
+    public Optional<String> readContent(HttpServletRequest request) {
         try {
-            return request.getReader().lines().collect(Collectors.joining());
+            return Optional.of(request.getReader().lines().collect(Collectors.joining()));
         } catch (IOException e) {
             log.debug("Failed to read request content: {}", e.getMessage());
         }
-        return null;
+        return Optional.empty();
     }
 }

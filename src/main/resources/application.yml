@@ -19,7 +19,7 @@ spring:
 logging:
   level:
     org.springframework: INFO
-    org.springframework.security: TRACE
+    org.springframework.security: INFO
     org.springframework.boot: INFO
     com.oas: DEBUG
 app:

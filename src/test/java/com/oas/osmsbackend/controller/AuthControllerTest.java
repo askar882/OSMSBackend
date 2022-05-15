@@ -1,8 +1,8 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.JsonUtil;
 import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
+import com.oas.osmsbackend.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -56,7 +56,7 @@ public class AuthControllerTest {
                 post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .content(JsonUtil.toJson(credentials)))
+                        .content(JsonUtil.INSTANCE.toJson(credentials)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.message", is("Login succeed.")));
         verify(userRepository, times(1)).findByUsername(Mockito.any());
