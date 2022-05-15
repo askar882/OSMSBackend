@@ -2,10 +2,10 @@ package com.oas.osmsbackend.controller;
 
 import com.oas.osmsbackend.annotaion.CurrentUser;
 import com.oas.osmsbackend.annotaion.HasRole;
-import com.oas.osmsbackend.domain.AuthenticationRequest;
 import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.response.DataResponse;
+import com.oas.osmsbackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,15 +35,13 @@ import javax.security.auth.login.AccountNotFoundException;
 @HasRole("ADMIN")
 public class UserController {
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DataResponse create(@RequestBody AuthenticationRequest authenticationRequest) {
+    public DataResponse create(@RequestBody User user) {
         return new DataResponse() {{
-            put("user", userRepository.saveAndFlush(User.builder()
-                    .username(authenticationRequest.getUsername())
-                    .password(authenticationRequest.getPassword())
-                    .build()));
+            put("user", userService.register(user));
         }};
     }
 

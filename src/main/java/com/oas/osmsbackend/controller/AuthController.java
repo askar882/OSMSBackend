@@ -1,6 +1,5 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.domain.AuthenticationRequest;
 import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
@@ -32,14 +31,12 @@ public class AuthController {
 
     @PostMapping("login")
     @ResponseStatus(HttpStatus.CREATED)
-    public DataResponse login(@RequestBody AuthenticationRequest requestData) {
-        String username = requestData.getUsername();
-        String password = requestData.getPassword();
-        log.debug("Login with credentials: {username: '{}', password: '{}'}", username, password);
+    public DataResponse login(@RequestBody User user) {
+        log.debug("Login with user: '{}'.", user);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        username,
-                        password
+                        user.getUsername(),
+                        user.getPassword()
                 )
         );
         String token = jwtTokenProvider.createToken(authentication);
@@ -50,15 +47,9 @@ public class AuthController {
 
     @PostMapping("register")
     @ResponseStatus(HttpStatus.CREATED)
-    public DataResponse register(@RequestBody AuthenticationRequest authenticationRequest) {
-        User user = userService.register(authenticationRequest);
+    public DataResponse register(@RequestBody User user) {
         return new DataResponse() {{
-            put("user", user);
+            put("user", userService.register(user));
         }};
-    }
-
-    @PostMapping("refresh")
-    public String refresh() {
-        return "";
     }
 }

@@ -1,6 +1,7 @@
 package com.oas.osmsbackend.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -48,19 +50,15 @@ public class User implements UserDetails {
     private String username;
 
     @NotNull
-    @ToString.Exclude
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = Collections.singletonList("ROLE_USER");
 
-    @Builder.Default
-    private boolean enabled = true;
-
-    @Builder.Default
-    private Date creationTime = new Date();
+    @Column(nullable = false, updatable = false)
+    private Date creationTime;
 
     @JsonIgnore
     @Override
@@ -88,6 +86,13 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return true;
+    }
+
+    @PrePersist
+    protected void prePersist() {
+        if (this.creationTime == null) {
+            setCreationTime(new Date());
+        }
     }
 }
