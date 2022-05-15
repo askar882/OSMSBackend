@@ -16,45 +16,65 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * 身份认证辅助类。
+ *
  * @author askar882
  * @date 2022/05/15
  */
 @Slf4j
 public class AuthHelper {
+    public static final String ADMIN_USER = "admin";
+    public static final String NORMAL_USER = "user";
+
+    /**
+     * 添加测试用户到传入的{@link UserRepository}实例。
+     *
+     * @param userRepository  添加用户的{@link UserRepository}实例。
+     * @param passwordEncoder 用于加密用户密码的{@link PasswordEncoder}实例。
+     */
     public static void initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        log.debug("Before user initialization: {}{}.",
+                System.lineSeparator(),
+                userRepository.findAll().stream()
+                        .map(User::toString)
+                        .collect(Collectors.joining(System.lineSeparator())));
         log.debug("Initializing users...");
         List<User> users = Arrays.asList(
                 User.builder()
                         .id(1L)
-                        .username("admin")
-                        .password(passwordEncoder.encode("admin"))
+                        .username(ADMIN_USER)
+                        .password(passwordEncoder.encode(ADMIN_USER))
                         .roles(Arrays.asList("ROLE_ADMIN", "ROLE_USER"))
                         .build(),
                 User.builder()
                         .id(2L)
-                        .username("user")
-                        .password(passwordEncoder.encode("user"))
+                        .username(NORMAL_USER)
+                        .password(passwordEncoder.encode(NORMAL_USER))
                         .roles(Collections.singletonList("ROLE_USER"))
                         .build()
         );
         userRepository.saveAllAndFlush(users);
-//        given(userRepository.findAll()).willReturn(users);
-//        users.forEach(user -> {
-//                given(userRepository.findByUsername(user.getUsername()))
-//                        .willReturn(Optional.of(user));
-//        });
+        log.debug("Printing users...");
+        userRepository.findAll().stream().map(User::toString).forEach(log::debug);
     }
 
-    public static Optional<String> mockLogin(MockMvc mockMvc, String username, String password) throws Exception {
+    /**
+     * 执行登录操作并返回获取的token。
+     *
+     * @param mockMvc  执行登录的{@link MockMvc}实例。
+     * @param username 登录的用户名。
+     * @return 获取的token。
+     */
+    public static Optional<String> mockLogin(MockMvc mockMvc, String username) throws Exception {
         Map<String, String> credentials = new HashMap<String, String>() {{
             put("username", username);
-            put("password", password);
+            put("password", username);
         }};
         log.debug("Perform login with mock MVC with credentials: '{}'.", credentials);
         return JsonUtil.INSTANCE.fromJson(
