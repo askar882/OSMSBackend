@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 /**
+ * 自定义拦截器，用于实现权限验证。
+ *
  * @author askar882
  * @date 2022/05/11
  */
@@ -38,6 +40,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
     /**
      * 处理被{@link HasRole}标注的类或对象，验证当前用户是否有对应角色。
      * 未被标注返回{@code false}，被标注并授权成功返回{@code true}，授权失败抛出异常。
+     *
      * @param method 处理请求的方法。
      * @return 被标注并授权成功返回 {@code true}，否则返回{@code false}。
      * @throws AccessDeniedException 用户没有要求的角色，无权访问。
@@ -54,7 +57,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
             return false;
         }
         String[] roles = Arrays.stream(hasRole.value())
-                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_".concat(role))
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                 .toArray(String[]::new);
         User currentUser = RequestUtil.INSTANCE.currentUser();
         if (Arrays.stream(roles).noneMatch(role -> currentUser.getRoles().contains(role))) {
@@ -72,6 +75,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
     /**
      * 处理被{@link CurrentUser}标注的类或对象，验证请求的用户ID当前用户是否是。
      * 未被标注时返回{@code false}，被标注并验证成功返回{@code true}，验证失败抛出异常。
+     *
      * @param method 处理请求的方法。
      * @param request 请求。
      * @return 被标注并验证成功返回 {@code true}，否则返回{@code false}。
@@ -95,6 +99,11 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
         return false;
     }
 
+    /**
+     * 从请求体或参数获取用户ID。
+     * @param request 请求。
+     * @return 用户ID。
+     */
     private Long getUserId(HttpServletRequest request) {
         String path = request.getServletPath();
         try {

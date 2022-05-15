@@ -4,6 +4,7 @@ import com.oas.osmsbackend.response.ErrorResponse;
 import com.oas.osmsbackend.util.JsonUtil;
 import com.oas.osmsbackend.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,24 +15,40 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.HandlerMethod;
 
 import javax.persistence.EntityExistsException;
+import javax.security.auth.login.AccountNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
+ * 自定义错误处理器。
+ *
  * @author askar882
  * @date 2022/04/20
  */
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler {
+    /**
+     * 处理身份验证错误，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例
+     */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
-    public ErrorResponse handle401(AuthenticationException ex) {
-        log.debug("Authentication failed: '{}'.", ex.getMessage());
+    public ErrorResponse authenticationError(HttpServletRequest request, AuthenticationException ex) {
+        logException(request, ex);
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
 
+    /**
+     * 处理请求错误，要求的请求体未提供，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @return {@link ErrorResponse}实例
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorResponse requestBodyMissing(HttpServletRequest request) {
@@ -44,24 +61,74 @@ public class RestExceptionHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), msg);
     }
 
+    /**
+     * 处理未分类的错误，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Throwable.class)
     public ErrorResponse globalException(HttpServletRequest request, Throwable ex) {
-        log.debug("Exception '{}' for URI '{}'.", ex, request.getRequestURI());
+        logException(request, ex);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
+    /**
+     * 处理资源冲突错误，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例
+     */
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EntityExistsException.class)
     public ErrorResponse entityExists(HttpServletRequest request, Throwable ex) {
-        log.debug("EntityExistsException '{}' for URI '{}'.", ex.getMessage(), request.getRequestURI());
+        logException(request, ex);
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
+    /**
+     * 处理授权验证错误，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例
+     */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public ErrorResponse accessDenied(HttpServletRequest request, Throwable ex) {
-        log.debug("Access denied '{}' for URI '{}'.", ex, request.getRequestURI());
+        logException(request, ex);
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+    }
+
+    /**
+     * 处理资源未找到错误，返回{@link ErrorResponse}。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({
+            // 账号未找到，手动抛出
+            AccountNotFoundException.class,
+            // 删除不存在的资源时JPA抛出的异常
+            EmptyResultDataAccessException.class})
+    public ErrorResponse notFound(HttpServletRequest request, Throwable ex) {
+        logException(request, ex);
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    /**
+     * 打日志。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     */
+    private void logException(HttpServletRequest request, Throwable ex) {
+        log.debug("Exception '{}' for URI '{}'.", ex, request.getRequestURI());
+        log.debug("Exception:", ex);
     }
 }
