@@ -1,7 +1,6 @@
 package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
-import com.oas.osmsbackend.util.Constants;
 import com.oas.osmsbackend.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import java.io.IOException;
 /**
  * JWT身份认证过滤器。
  * 继承{@link OncePerRequestFilter}类来表示对一个请求只执行一次，防止{@link Component}被扫描自动添加的最低优先级实例被重新调用。
+ *
  * @author askar882
  * @date 3/31/2022
  */
@@ -42,6 +42,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     /**
      * 过滤逻辑。
+     *
      * @param request 过滤的{@link HttpServletRequest}对象。
      * @param response 过滤的{@link HttpServletResponse}对象。
      * @param chain 过滤链。
@@ -54,8 +55,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        String header = request.getHeader(Constants.AUTHORIZATION_HEADER);
-        if (!StringUtils.hasText(header) || !header.startsWith(Constants.BEARER_TOKEN)) {
+        String header = request.getHeader(appConfiguration.getAuthHeader());
+        if (!StringUtils.hasText(header) || !header.startsWith(appConfiguration.getBearerToken())) {
             ResponseUtil.INSTANCE.writeError(
                     response,
                     HttpStatus.UNAUTHORIZED.value(),
@@ -82,6 +83,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     /**
      * 检查请求是否需要鉴权。
+     *
      * @param request 检查的请求。
      * @return 如需鉴权，返回{@code true}，否则返回{@code false}。
      */

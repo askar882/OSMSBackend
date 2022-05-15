@@ -23,7 +23,7 @@ logging:
 app:
   version: 1.0.0
   description: @project.description@
-  ignoredUrls:
+  ignored-urls:
     -
       pattern: /auth/login
       method: POST
@@ -36,6 +36,8 @@ app:
     -
       pattern: /docs.*
       method: GET
+  jwt-secret: askar882
+  token-validity: 3600 # 1小时
 springdoc:
   api-docs:
     path: /docs
