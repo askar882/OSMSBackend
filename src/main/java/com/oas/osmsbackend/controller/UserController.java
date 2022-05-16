@@ -3,7 +3,6 @@ package com.oas.osmsbackend.controller;
 import com.oas.osmsbackend.annotaion.CurrentUser;
 import com.oas.osmsbackend.annotaion.HasRole;
 import com.oas.osmsbackend.domain.User;
-import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,14 +32,13 @@ import javax.security.auth.login.AccountNotFoundException;
 @Slf4j
 @HasRole("ADMIN")
 public class UserController {
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DataResponse create(@RequestBody User user) {
         return new DataResponse() {{
-            put("user", userService.register(user));
+            put("user", userService.create(user));
         }};
     }
 
@@ -49,7 +46,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public DataResponse list() {
         return new DataResponse() {{
-            put("users", userRepository.findAll());
+            put("users", userService.list());
         }};
     }
 
@@ -58,18 +55,16 @@ public class UserController {
     @CurrentUser
     public DataResponse read(@PathVariable Long userId) throws AccountNotFoundException {
         return new DataResponse() {{
-            put("user", userRepository.findById(userId).orElseThrow(
-                    () -> new AccountNotFoundException("User with ID " + userId + " is not found.")));
+            put("user", userService.read(userId));
         }};
     }
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @CurrentUser
-    public DataResponse update(@PathVariable Long userId, @RequestBody User user) {
-        // FIXME: Implement.
+    public DataResponse update(@PathVariable Long userId, @RequestBody User user) throws AccountNotFoundException {
         return new DataResponse() {{
-            put("user", userRepository.saveAndFlush(user));
+            put("user", userService.update(userId, user));
         }};
     }
 
@@ -77,17 +72,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CurrentUser
     public void delete(@PathVariable Long userId) {
-        log.debug("Delete user {}.", userId);
-        userRepository.deleteById(userId);
-    }
-
-    @PatchMapping("/{userId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @CurrentUser
-    public DataResponse patch(@PathVariable Long userId, @RequestBody User user) {
-        // TODO: Implement.
-        return new DataResponse() {{
-            put("user", user);
-        }};
+        userService.delete(userId);
     }
 }

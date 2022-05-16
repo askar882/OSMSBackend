@@ -88,7 +88,6 @@ public class JwtTokenProvider {
         User principal = userRepository.findOne(Example.of(User.builder()
                         .username(claims.getSubject())
                         .roles(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                        .creationTime(null)
                         .build()))
                 .orElseThrow(() -> new BadCredentialsException("Bad JWT token."));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);

@@ -2,12 +2,17 @@ package com.oas.osmsbackend.service;
 
 import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
+import com.oas.osmsbackend.util.RequestUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityExistsException;
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户服务类。
@@ -22,20 +27,48 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User register(User user) {
+    public User create(User user) {
         userRepository.findByUsername(user.getUsername()).ifPresent((u) -> {
             throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
         });
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         log.debug("Registered user {}.", user);
-        return userRepository.saveAndFlush(user);
+        return userRepository.save(user);
     }
 
-    public User updateUser(User user) {
-        return userRepository.saveAndFlush(user);
+    public User update(Long userId, User user) throws AccountNotFoundException {
+        User oldUser = read(userId);
+        if (!oldUser.getUsername().equals(user.getUsername())
+                && userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
+        }
+        if (StringUtils.hasText(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        List<String> roles = user.getRoles();
+        if (roles == null) {
+            roles = new ArrayList<>();
+        }
+        if (!roles.contains("ROLE_USER")) {
+            roles.add("ROLE_USER");
+        }
+        user.setRoles(roles);
+        return userRepository.save(user);
     }
 
-    public User patchUser(User user) {
-        return userRepository.saveAndFlush(user);
+    public List<User> list() {
+        return userRepository.findAll();
+    }
+
+    public User read(Long userId) throws AccountNotFoundException {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new AccountNotFoundException("User with ID '" + userId + "' is not found."));
+    }
+
+    public void delete(Long userId) {
+        if (RequestUtil.INSTANCE.currentUser().getId().equals(userId)) {
+            throw new IllegalStateException("Cannot perform delete action on self.");
+        }
+        userRepository.deleteById(userId);
     }
 }

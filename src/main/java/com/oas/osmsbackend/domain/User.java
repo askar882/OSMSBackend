@@ -20,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -60,6 +61,9 @@ public class User implements UserDetails {
     @Column(nullable = false, updatable = false)
     private Date creationTime;
 
+    @Column(nullable = false)
+    private Date modificationTime;
+
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,7 +96,13 @@ public class User implements UserDetails {
     @PrePersist
     protected void prePersist() {
         if (this.creationTime == null) {
-            setCreationTime(new Date());
+            this.creationTime = new Date();
         }
+        this.modificationTime = new Date();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.modificationTime = new Date();
     }
 }

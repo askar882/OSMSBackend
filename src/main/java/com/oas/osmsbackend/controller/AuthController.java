@@ -49,7 +49,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public DataResponse register(@RequestBody User user) {
         return new DataResponse() {{
-            put("user", userService.register(user));
+            put("user", userService.create(user));
         }};
     }
 }
