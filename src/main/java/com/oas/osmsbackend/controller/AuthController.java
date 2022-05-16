@@ -4,6 +4,8 @@ import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
 import com.oas.osmsbackend.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @Slf4j
+@Tag(name = "身份认证控制器", description = "处理用户身份认证请求，实现登录和注册。")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
@@ -39,6 +42,7 @@ public class AuthController {
      */
     @PostMapping("login")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "登录", description = "使用提供的用户名密码尝试登录，登录成功生成Token返回，失败抛出异常。")
     public DataResponse login(@RequestBody User user) {
         log.debug("Login with user: '{}'.", user);
         Authentication authentication = authenticationManager.authenticate(
@@ -61,6 +65,7 @@ public class AuthController {
      */
     @PostMapping("register")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "注册用户", description = "使用提供的用户信息进行注册，用户名不得与现有用户重复，注册成功返回用户信息，失败抛出异常。")
     public DataResponse register(@RequestBody User user) {
         return new DataResponse() {{
             put("user", userService.create(user));

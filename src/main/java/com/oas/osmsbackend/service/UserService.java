@@ -45,14 +45,18 @@ public class UserService {
         if (StringUtils.hasText(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        List<String> roles = user.getRoles();
-        if (roles == null) {
-            roles = new ArrayList<>();
+        if (RequestUtil.INSTANCE.currentUser().getRoles().contains("ROLE_ADMIN")) {
+            List<String> roles = user.getRoles();
+            if (roles == null) {
+                roles = new ArrayList<>();
+            }
+            if (!roles.contains("ROLE_USER")) {
+                roles.add("ROLE_USER");
+            }
+            user.setRoles(roles);
+        } else {
+            user.setRoles(oldUser.getRoles());
         }
-        if (!roles.contains("ROLE_USER")) {
-            roles.add("ROLE_USER");
-        }
-        user.setRoles(roles);
         return userRepository.save(user);
     }
 
