@@ -29,6 +29,16 @@ import java.util.List;
 @Setter
 public class AppConfiguration {
     /**
+     * 项目版本。
+     */
+    private String version;
+
+    /**
+     * 项目说明。
+     */
+    private String description;
+
+    /**
      * 无需验证身份的资源列表。
      */
     @Valid
