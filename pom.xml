@@ -12,11 +12,12 @@
     <artifactId>OSMSBackend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>OSMSBackend</name>
-    <description>OSMSBackend</description>
+    <description>智慧云平台运营服务管理系统</description>
     <properties>
         <java.version>1.8</java.version>
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,5 +116,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

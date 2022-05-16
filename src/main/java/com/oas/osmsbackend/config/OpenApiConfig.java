@@ -21,6 +21,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("OSMS API")
                         .version(version)
-                        .description(description));
+                        .description(description + "API文档"));
     }
 }

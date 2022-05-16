@@ -2,6 +2,7 @@ package com.oas.osmsbackend.controller;
 
 import com.oas.osmsbackend.response.ErrorResponse;
 import com.oas.osmsbackend.util.RequestUtil;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -30,6 +31,7 @@ import java.util.Map;
 @RequestMapping("${server.error.path:${error.path:/error}}")
 @RequiredArgsConstructor
 @Slf4j
+@Hidden
 public class RestErrorController implements ErrorController {
     /**
      * 错误属性。
