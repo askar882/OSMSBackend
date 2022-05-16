@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.config;
 
+import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.security.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -105,16 +105,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return authentication -> {
             String username = authentication.getPrincipal().toString();
             String password = authentication.getCredentials().toString();
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            User user = (User) userDetailsService.loadUserByUsername(username);
 
-            if (!encoder.matches(password, userDetails.getPassword())) {
+            if (!encoder.matches(password, user.getPassword())) {
                 throw new BadCredentialsException("Bad credentials.");
             }
 
-            if (!userDetails.isEnabled()) {
+            if (!user.isEnabled()) {
                 throw new DisabledException("User is disabled.");
             }
-            return new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
+            var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
+            authenticationToken.setDetails(user.getId());
+            return authenticationToken;
         };
     }
 }

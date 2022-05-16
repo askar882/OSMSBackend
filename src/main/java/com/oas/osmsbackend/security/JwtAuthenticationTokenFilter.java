@@ -2,6 +2,7 @@ package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
 import com.oas.osmsbackend.util.ResponseUtil;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -69,13 +70,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             log.debug("Authenticated.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException ex) {
+        } catch (BadCredentialsException | JwtException ex) {
             ResponseUtil.INSTANCE.writeError(
                     response,
                     HttpStatus.UNAUTHORIZED.value(),
                     ex.getMessage()
             );
-            log.debug("JWT token authentication failed: {}", ex.getMessage());
+            log.debug("JWT token authentication failed.", ex);
             return;
         }
         chain.doFilter(request, response);

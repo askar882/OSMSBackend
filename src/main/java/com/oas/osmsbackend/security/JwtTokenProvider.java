@@ -53,6 +53,7 @@ public class JwtTokenProvider {
     public String createToken(Authentication authentication) {
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Long userId = (Long) authentication.getDetails();
         Claims claims = Jwts.claims().setSubject(username);
         if (!authorities.isEmpty()) {
             claims.put(appConfiguration.getAuthoritiesKey(),
@@ -60,6 +61,9 @@ public class JwtTokenProvider {
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.joining(","))
             );
+        }
+        if (userId != null) {
+            claims.put("id", userId);
         }
         Date validity = new Date(System.currentTimeMillis() + Duration.ofSeconds(appConfiguration.getTokenValidity()).toMillis());
         return Jwts.builder()
@@ -77,11 +81,12 @@ public class JwtTokenProvider {
      * @return Token对应的 {@link Authentication}实例。
      * @throws BadCredentialsException Token验证失败时抛出。
      */
-    public Authentication getAuthentication(String token) throws BadCredentialsException {
-        if (!validateToken(token)) {
-            throw new BadCredentialsException("JWT token validation failed.");
-        }
-        Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token).getBody();
+    public Authentication getAuthentication(String token) throws BadCredentialsException, JwtException {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(this.secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         Object authoritiesClaim = claims.get(appConfiguration.getAuthoritiesKey());
         Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES
                 : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
@@ -91,22 +96,5 @@ public class JwtTokenProvider {
                         .build()))
                 .orElseThrow(() -> new BadCredentialsException("Bad JWT token."));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
-    }
-
-    /**
-     * 验证Token。
-     *
-     * @param token 待验证的Token。
-     * @return 验证成功返回 {@code true}，否则返回{@code false}。
-     */
-    private boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(this.secretKey).build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
-        }
-        return false;
     }
 }
