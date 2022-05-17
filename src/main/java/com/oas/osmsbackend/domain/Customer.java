@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.domain;
 
+import com.oas.osmsbackend.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,9 +55,4 @@ public class Customer {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> addresses;
-
-    enum Gender {
-        MALE,
-        FEMALE
-    }
 }

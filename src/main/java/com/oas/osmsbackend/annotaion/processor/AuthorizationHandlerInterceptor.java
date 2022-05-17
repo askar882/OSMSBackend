@@ -3,6 +3,7 @@ package com.oas.osmsbackend.annotaion.processor;
 import com.oas.osmsbackend.annotaion.CurrentUser;
 import com.oas.osmsbackend.annotaion.HasRole;
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.util.JsonUtil;
 import com.oas.osmsbackend.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -59,9 +60,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
         if (hasRole == null) {
             return false;
         }
-        String[] roles = Arrays.stream(hasRole.value())
-                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
-                .toArray(String[]::new);
+        Role[] roles = hasRole.value();
         User currentUser = RequestUtil.INSTANCE.currentUser();
         if (Arrays.stream(roles).noneMatch(role -> currentUser.getRoles().contains(role))) {
             log.debug("User '{}' has none of roles required {}.", currentUser.getUsername(), roles);

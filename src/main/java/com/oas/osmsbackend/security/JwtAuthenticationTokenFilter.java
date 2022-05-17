@@ -2,12 +2,12 @@ package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
 import com.oas.osmsbackend.util.ResponseUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -70,11 +70,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             log.debug("Authenticated.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException | JwtException ex) {
+        } catch (JwtException ex) {
+            String msg = "JWT token validation failed.";
+            if (ex instanceof ExpiredJwtException) {
+                msg = "JWT expired at " + ((ExpiredJwtException) ex).getClaims().getExpiration();
+            }
             ResponseUtil.INSTANCE.writeError(
                     response,
                     HttpStatus.UNAUTHORIZED.value(),
-                    ex.getMessage()
+                    msg
             );
             log.debug("JWT token authentication failed.", ex);
             return;

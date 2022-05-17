@@ -1,6 +1,7 @@
 package com.oas.osmsbackend.service;
 
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.util.RequestUtil;
 import lombok.RequiredArgsConstructor;
@@ -45,13 +46,13 @@ public class UserService {
         if (StringUtils.hasText(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        if (RequestUtil.INSTANCE.currentUser().getRoles().contains("ROLE_ADMIN")) {
-            List<String> roles = user.getRoles();
+        if (RequestUtil.INSTANCE.currentUser().getRoles().contains(Role.ADMIN)) {
+            List<Role> roles = user.getRoles();
             if (roles == null) {
                 roles = new ArrayList<>();
             }
-            if (!roles.contains("ROLE_USER")) {
-                roles.add("ROLE_USER");
+            if (!roles.contains(Role.USER)) {
+                roles.add(Role.USER);
             }
             user.setRoles(roles);
         } else {

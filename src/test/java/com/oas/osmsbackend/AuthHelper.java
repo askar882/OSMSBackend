@@ -1,6 +1,7 @@
 package com.oas.osmsbackend;
 
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.util.JsonUtil;
@@ -50,13 +51,13 @@ public class AuthHelper {
                         .id(1L)
                         .username(ADMIN_USER)
                         .password(passwordEncoder.encode(ADMIN_USER))
-                        .roles(Arrays.asList("ROLE_ADMIN", "ROLE_USER"))
+                        .roles(Arrays.asList(Role.ADMIN, Role.USER))
                         .build(),
                 User.builder()
                         .id(2L)
                         .username(NORMAL_USER)
                         .password(passwordEncoder.encode(NORMAL_USER))
-                        .roles(Collections.singletonList("ROLE_USER"))
+                        .roles(Collections.singletonList(Role.USER))
                         .build()
         );
         userRepository.saveAllAndFlush(users);

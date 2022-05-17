@@ -1,5 +1,7 @@
 package com.oas.osmsbackend.annotaion;
 
+import com.oas.osmsbackend.enums.Role;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -21,5 +23,5 @@ public @interface HasRole {
     /**
      * 授权的用户角色列表。
      */
-    String[] value();
+    Role[] value();
 }

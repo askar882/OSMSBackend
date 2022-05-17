@@ -1,6 +1,7 @@
 package com.oas.osmsbackend;
 
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -36,9 +37,9 @@ public class OsmsBackendApplication {
                     .password(passwordEncoder.encode(data.get(1)))
                     .roles(
                             Arrays.stream(data.get(2).split(","))
-                                    .map(s -> "ROLE_" + s)
-                                    .collect(Collectors.toList())
-                    ).build()));
+                                    .map(Role::valueOf)
+                                    .collect(Collectors.toList()))
+                    .build()));
             log.debug("Printing all users...");
             userRepository
                     .findAll()

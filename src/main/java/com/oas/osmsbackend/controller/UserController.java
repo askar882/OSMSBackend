@@ -3,6 +3,7 @@ package com.oas.osmsbackend.controller;
 import com.oas.osmsbackend.annotaion.CurrentUser;
 import com.oas.osmsbackend.annotaion.HasRole;
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +33,7 @@ import javax.security.auth.login.AccountNotFoundException;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
-@HasRole("ADMIN")
+@HasRole(Role.ADMIN)
 @Tag(name = "用户管理控制器", description = "处理管理用户的请求，当前用户有ADMIN角色时可调用所有方法。")
 public class UserController {
     private final UserService userService;

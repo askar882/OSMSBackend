@@ -2,6 +2,7 @@ package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
 import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -9,7 +10,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -79,22 +79,26 @@ public class JwtTokenProvider {
      *
      * @param token 转换的Token。
      * @return Token对应的 {@link Authentication}实例。
-     * @throws BadCredentialsException Token验证失败时抛出。
+     * @throws JwtException Token验证失败时抛出。
      */
-    public Authentication getAuthentication(String token) throws BadCredentialsException, JwtException {
+    public Authentication getAuthentication(String token) throws JwtException {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(this.secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        log.debug("Parsed token: '{}'.", claims);
         Object authoritiesClaim = claims.get(appConfiguration.getAuthoritiesKey());
         Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES
                 : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
         User principal = userRepository.findOne(Example.of(User.builder()
                         .username(claims.getSubject())
-                        .roles(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                        .roles(authorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .map(Role::valueOf)
+                                .collect(Collectors.toList()))
                         .build()))
-                .orElseThrow(() -> new BadCredentialsException("Bad JWT token."));
+                .orElseThrow(() -> new JwtException("JWT subject invalid"));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 }

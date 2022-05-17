@@ -2,6 +2,7 @@ package com.oas.osmsbackend.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.oas.osmsbackend.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -54,8 +57,9 @@ public class User implements UserDetails {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private List<String> roles = Collections.singletonList("ROLE_USER");
+    private List<Role> roles = Collections.singletonList(Role.USER);
 
     @Column(nullable = false, updatable = false)
     private Date creationTime;
@@ -66,7 +70,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return AuthorityUtils.createAuthorityList(this.roles.toArray(new String[0]));
+        return AuthorityUtils.createAuthorityList(this.roles.stream().map(Role::toString).toArray(String[]::new));
     }
 
     @Override
