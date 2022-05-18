@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -54,11 +56,14 @@ public class Customer {
     @Comment("性别")
     private Gender gender;
 
+    @NotNull
+    @Column(unique = true)
+    @Comment("电话")
+    private String phone;
+
     @Comment("邮箱")
     private String email;
 
-    @Comment("电话")
-    private String phone;
 
     @Comment("生日")
     private Date birthDate;
@@ -69,5 +74,5 @@ public class Customer {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @Comment("订单")
-    private Set<Order> orders;
+    private Set<Order> orders = new HashSet<>();
 }

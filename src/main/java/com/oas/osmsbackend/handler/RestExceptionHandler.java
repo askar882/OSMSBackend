@@ -1,23 +1,25 @@
 package com.oas.osmsbackend.handler;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.oas.osmsbackend.response.ErrorResponse;
-import com.oas.osmsbackend.util.JsonUtil;
-import com.oas.osmsbackend.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.HandlerMethod;
 
 import javax.persistence.EntityExistsException;
 import javax.security.auth.login.AccountNotFoundException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import java.util.stream.Collectors;
 
 /**
@@ -51,13 +53,12 @@ public class RestExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ErrorResponse requestBodyMissing(HttpServletRequest request) {
-        HandlerMethod method = RequestUtil.INSTANCE.getHandlerMethod(request);
-        String requestBody = Arrays.stream(method.getMethodParameters())
-                .map(m -> JsonUtil.INSTANCE.toJson(m.getParameterType()) + " " + m.getParameterName())
-                .collect(Collectors.joining(","));
-        String msg = "Required request body is missing: " + requestBody;
-        log.debug(msg);
+    public ErrorResponse requestBodyMissing(HttpServletRequest request, Throwable ex) {
+        logException(request, ex);
+        String msg = "Required request body is missing or invalid.";
+        if (NestedExceptionUtils.getRootCause(ex) instanceof JsonParseException) {
+            msg = "Invalid JSON data.";
+        }
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), msg);
     }
 
@@ -119,6 +120,27 @@ public class RestExceptionHandler {
     public ErrorResponse notFound(HttpServletRequest request, Throwable ex) {
         logException(request, ex);
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(TransactionSystemException.class)
+    public ErrorResponse validationException(HttpServletRequest request, Throwable ex) {
+        logException(request, ex);
+        Throwable rootCause = NestedExceptionUtils.getRootCause(ex);
+        if (rootCause == null) {
+            rootCause = ex;
+        }
+        String msg = rootCause.getMessage();
+        if (rootCause instanceof ConstraintViolationException) {
+            msg = "Validation failed for field(s): '{"
+                    + ((ConstraintViolationException) rootCause).getConstraintViolations().stream()
+                    .map(ConstraintViolation::getPropertyPath)
+                    .map(Path::toString)
+                    .collect(Collectors.joining(", "))
+                    + "}.";
+        }
+        log.debug(msg);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), msg);
     }
 
     /**
