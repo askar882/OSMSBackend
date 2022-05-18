@@ -1,7 +1,7 @@
 package com.oas.osmsbackend.domain;
 
 import com.oas.osmsbackend.domain.embeddable.Address;
-import com.oas.osmsbackend.enums.Gender;
+import com.oas.osmsbackend.domain.embeddable.ContactPerson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,10 +11,8 @@ import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,52 +20,46 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.Set;
 
 /**
- * 客户。
+ * 经销商。
  *
  * @author askar882
- * @date 2022/05/16
+ * @date 2022/05/18
  */
 @Entity
-@Table(name = "customers")
-@org.hibernate.annotations.Table(appliesTo = "customers", comment = "客户")
+@Table(name = "dealers")
+@org.hibernate.annotations.Table(comment = "经销商", appliesTo = "dealers")
 @Getter
 @Setter
 @ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Dealer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull
-    @Comment("姓名")
+    @Comment("经销商名称")
     private String name;
 
     @NotNull
-    @Enumerated(EnumType.ORDINAL)
-    @Comment("性别")
-    private Gender gender;
+    @Embedded
+    @Comment("联系人")
+    private ContactPerson contact;
 
-    @Comment("邮箱")
-    private String email;
-
-    @Comment("电话")
+    @Comment("联系电话")
     private String phone;
 
-    @Comment("生日")
-    private Date birthDate;
-
-    @ElementCollection(fetch = FetchType.EAGER)
+    @NotNull
+    @Embedded
     @Comment("地址")
-    private Set<Address> addresses;
+    private Address address;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @Comment("订单")
-    private Set<Order> orders;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Comment("销售的商品")
+    private Set<Product> products;
 }
