@@ -1,6 +1,8 @@
 package com.oas.osmsbackend.domain;
 
 import com.oas.osmsbackend.domain.embeddable.Address;
+import com.oas.osmsbackend.domain.embeddable.OrderItem;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +20,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -44,23 +46,35 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @Comment("订单里的商品")
-    private Set<Product> products;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Comment("商品清单")
+    private Set<OrderItem> orderItems;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @Comment("下单客户")
     private User user;
 
-    @NotNull
     @Embedded
+    @NotNull
     @Comment("收货地址")
     private Address address;
 
-    @NotNull
+    @Setter(AccessLevel.NONE)
     @Comment("订单总价")
     private Double totalCost;
+
+    /**
+     * 自定义订单总价Getter，计算订单里每种商品的费用并求和算出订单总价。
+     *
+     * @return 算出的订单总价。
+     */
+    public Double getTotalCost() {
+        return this.orderItems.stream()
+                .map(item -> item.getProduct().getPrice() * item.getCount())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+    }
 
     @Builder.Default
     @Comment("运费")

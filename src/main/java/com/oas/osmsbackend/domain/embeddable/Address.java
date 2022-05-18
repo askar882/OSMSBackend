@@ -5,9 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
@@ -18,13 +15,6 @@ import javax.validation.constraints.NotNull;
  * @date 2022/05/18
  */
 @Embeddable
-@AttributeOverrides({
-        @AttributeOverride(name = "province", column = @Column(name = "address_province")),
-        @AttributeOverride(name = "city", column = @Column(name = "address_city")),
-        @AttributeOverride(name = "district", column = @Column(name = "address_district")),
-        @AttributeOverride(name = "street", column = @Column(name = "address_street")),
-        @AttributeOverride(name = "detail", column = @Column(name = "address_detail"))
-})
 @Getter
 @Setter
 @ToString
@@ -47,7 +37,7 @@ public class Address {
 
     @NotNull
     @Comment("详细地址")
-    private String detail;
+    private String address;
 
     @NotNull
     @Comment("邮编")

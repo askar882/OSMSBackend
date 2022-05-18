@@ -30,7 +30,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dealers")
-@org.hibernate.annotations.Table(comment = "经销商", appliesTo = "dealers")
+@org.hibernate.annotations.Table(appliesTo = "dealers", comment = "经销商")
 @Getter
 @Setter
 @ToString
@@ -46,16 +46,16 @@ public class Dealer {
     @Comment("经销商名称")
     private String name;
 
-    @NotNull
     @Embedded
+    @NotNull
     @Comment("联系人")
     private ContactPerson contact;
 
     @Comment("联系电话")
     private String phone;
 
-    @NotNull
     @Embedded
+    @NotNull
     @Comment("地址")
     private Address address;
 

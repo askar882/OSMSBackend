@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Comment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,11 +33,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 用户。
+ *
  * @author askar882
  * @date 2022/04/22
  */
 @Entity
 @Table(name = "users")
+@org.hibernate.annotations.Table(appliesTo = "users", comment = "用户")
 @Getter
 @Setter
 @ToString
@@ -50,21 +54,26 @@ public class User implements UserDetails {
 
     @NotNull
     @Column(unique = true)
+    @Comment("用户名")
     private String username;
 
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Comment("用户密码")
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @Comment("用户角色")
     private List<Role> roles = Collections.singletonList(Role.USER);
 
     @Column(nullable = false, updatable = false)
+    @Comment("创建时间")
     private Date creationTime;
 
     @Column(nullable = false)
+    @Comment("修改时间")
     private Date modificationTime;
 
     @JsonIgnore

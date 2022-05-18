@@ -49,8 +49,8 @@ public class Customer {
     @Comment("姓名")
     private String name;
 
-    @NotNull
     @Enumerated(EnumType.ORDINAL)
+    @NotNull
     @Comment("性别")
     private Gender gender;
 

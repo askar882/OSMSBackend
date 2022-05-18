@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
+ * 商品。
+ *
  * @author askar882
  * @date 2022/05/16
  */
