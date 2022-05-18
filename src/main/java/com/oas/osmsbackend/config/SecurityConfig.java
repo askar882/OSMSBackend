@@ -1,6 +1,5 @@
 package com.oas.osmsbackend.config;
 
-import com.oas.osmsbackend.domain.User;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.security.JwtAuthenticationTokenFilter;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -91,32 +87,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return username -> userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Username '" + username + "' not found."));
-    }
-
-    /**
-     * 身份验证管理器，用于验证用户名密码。
-     *
-     * @param userDetailsService 获取用户数据的服务。
-     * @param encoder 密钥加密器。
-     * @return {@link AuthenticationManager}实例。
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder encoder) {
-        return authentication -> {
-            String username = authentication.getPrincipal().toString();
-            String password = authentication.getCredentials().toString();
-            User user = (User) userDetailsService.loadUserByUsername(username);
-
-            if (!encoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException("Bad credentials.");
-            }
-
-            if (!user.isEnabled()) {
-                throw new DisabledException("User is disabled.");
-            }
-            var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
-            authenticationToken.setDetails(user.getId());
-            return authenticationToken;
-        };
     }
 }

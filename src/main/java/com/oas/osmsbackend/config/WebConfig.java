@@ -21,6 +21,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * Spring Web配置。
+ *
  * @author askar882
  * @date 2022/04/07
  */
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     /**
      * 设置默认响应内容类型为JSON。
+     *
      * @param configurer {@link ContentNegotiationConfigurer}实例。
      */
     @Override
@@ -38,6 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 添加自定义Handler拦截器，实现权限验证。
+     *
      * @param registry 拦截器注册表。
      */
     @Override
@@ -47,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 自定义Tomcat默认错误页。
+     *
      * @return Tomcat错误页自定义Bean。
      */
     @Bean
@@ -61,6 +66,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     /**
      * 自定义{@link MappingJackson2HttpMessageConverter}，注册自定义的{@link ObjectMapper}。
+     *
      * @param defaultMapper 自动生成的默认{@link ObjectMapper}。
      * @return 新的 {@link MappingJackson2HttpMessageConverter}实例。
      */
