@@ -55,9 +55,10 @@ public class Order {
     private Set<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "customer_id")
+    @NotNull
     @Comment("下单客户")
-    private User user;
+    private Customer customer;
 
     @Embedded
     @NotNull
@@ -73,6 +74,7 @@ public class Order {
      *
      * @return 算出的订单总价。
      */
+    @SuppressWarnings("unused")
     public Double getTotalCost() {
         return this.orderItems.stream()
                 .map(item -> item.getPrice() * item.getCount())
