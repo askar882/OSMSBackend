@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,13 +52,13 @@ public class AuthHelper {
                         .id(1L)
                         .username(ADMIN_USER)
                         .password(passwordEncoder.encode(ADMIN_USER))
-                        .roles(Arrays.asList(Role.ADMIN, Role.USER))
+                        .roles(Stream.of(Role.ADMIN, Role.USER).collect(Collectors.toSet()))
                         .build(),
                 User.builder()
                         .id(2L)
                         .username(NORMAL_USER)
                         .password(passwordEncoder.encode(NORMAL_USER))
-                        .roles(Collections.singletonList(Role.USER))
+                        .roles(Collections.singleton(Role.USER))
                         .build()
         );
         userRepository.saveAllAndFlush(users);

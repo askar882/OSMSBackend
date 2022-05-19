@@ -12,8 +12,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityExistsException;
 import javax.security.auth.login.AccountNotFoundException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 用户服务类。
@@ -37,31 +38,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User update(Long userId, User user) throws AccountNotFoundException {
-        User oldUser = read(userId);
-        if (!oldUser.getUsername().equals(user.getUsername())
-                && userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
-        }
-        if (StringUtils.hasText(user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        if (RequestUtil.INSTANCE.currentUser().getRoles().contains(Role.ADMIN)) {
-            List<Role> roles = user.getRoles();
-            if (roles == null) {
-                roles = new ArrayList<>();
-            }
-            if (!roles.contains(Role.USER)) {
-                roles.add(Role.USER);
-            }
-            user.setRoles(roles);
-        } else {
-            user.setRoles(oldUser.getRoles());
-        }
-        user.setId(oldUser.getId());
-        return userRepository.save(user);
-    }
-
     public List<User> list() {
         return userRepository.findAll();
     }
@@ -71,10 +47,37 @@ public class UserService {
                 () -> new AccountNotFoundException("User with ID '" + userId + "' is not found."));
     }
 
-    public void delete(Long userId) {
+    public User update(Long userId, User user) throws AccountNotFoundException {
+        User oldUser = read(userId);
+        if (user.getUsername() != null) {
+            if (!oldUser.getUsername().equals(user.getUsername())
+                    && userRepository.findByUsername(user.getUsername()).isPresent()) {
+                throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
+            }
+            oldUser.setUsername(user.getUsername());
+        }
+        if (StringUtils.hasText(user.getPassword())) {
+            oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (RequestUtil.INSTANCE.currentUser().getRoles().contains(Role.ADMIN)) {
+            Set<Role> roles = user.getRoles();
+            if (roles == null) {
+                roles = new HashSet<>();
+            }
+            roles.add(Role.USER);
+            user.setRoles(roles);
+        } else {
+            user.setRoles(oldUser.getRoles());
+        }
+        user.setId(oldUser.getId());
+        return userRepository.save(user);
+    }
+
+
+    public void delete(Long userId) throws AccountNotFoundException {
         if (RequestUtil.INSTANCE.currentUser().getId().equals(userId)) {
             throw new IllegalStateException("Cannot perform delete action on self.");
         }
-        userRepository.deleteById(userId);
+        userRepository.delete(read(userId));
     }
 }

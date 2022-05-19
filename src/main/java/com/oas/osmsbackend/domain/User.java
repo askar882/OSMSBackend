@@ -30,7 +30,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 用户。
@@ -66,7 +66,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     @Comment("用户角色")
-    private List<Role> roles = Collections.singletonList(Role.USER);
+    private Set<Role> roles = Collections.singleton(Role.USER);
 
     @Column(nullable = false, updatable = false)
     @Comment("创建时间")

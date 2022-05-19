@@ -82,7 +82,7 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "删除用户", description = "删除用户ID为userId的用户。只有ADMIN角色用户可调用。")
-    public void delete(@PathVariable Long userId) {
+    public void delete(@PathVariable Long userId) throws AccountNotFoundException {
         userService.delete(userId);
     }
 }

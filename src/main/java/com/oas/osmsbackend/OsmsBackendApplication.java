@@ -38,7 +38,7 @@ public class OsmsBackendApplication {
                     .roles(
                             Arrays.stream(data.get(2).split(","))
                                     .map(Role::valueOf)
-                                    .collect(Collectors.toList()))
+                                    .collect(Collectors.toSet()))
                     .build()));
             log.debug("Printing all users...");
             userRepository

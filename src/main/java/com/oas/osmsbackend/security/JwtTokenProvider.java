@@ -96,7 +96,7 @@ public class JwtTokenProvider {
                         .roles(authorities.stream()
                                 .map(GrantedAuthority::getAuthority)
                                 .map(Role::valueOf)
-                                .collect(Collectors.toList()))
+                                .collect(Collectors.toSet()))
                         .build()))
                 .orElseThrow(() -> new JwtException("JWT subject invalid"));
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
