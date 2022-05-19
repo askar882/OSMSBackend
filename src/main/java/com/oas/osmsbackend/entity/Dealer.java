@@ -66,7 +66,7 @@ public class Dealer {
     @Comment("地址")
     private Address address;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "dealer")
     @Valid
     @Comment("销售的商品")
     private Set<Product> products;

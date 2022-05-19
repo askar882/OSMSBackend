@@ -77,7 +77,7 @@ public class Customer {
     @Comment("地址")
     private Set<Address> addresses;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "customer")
     @Comment("订单")
     private Set<Order> orders = new HashSet<>();
 }
