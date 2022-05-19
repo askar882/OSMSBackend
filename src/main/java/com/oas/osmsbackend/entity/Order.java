@@ -55,7 +55,7 @@ public class Order {
     private Set<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
     @NotNull
     @Comment("下单客户")
     private Customer customer;

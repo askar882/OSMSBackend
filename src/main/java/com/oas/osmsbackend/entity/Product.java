@@ -57,7 +57,8 @@ public class Product {
     private Double price;
 
     @ManyToOne
-    @JoinColumn(name = "dealer_id")
+    @JoinColumn(name = "dealer_id", insertable = false, updatable = false)
+    @NotNull
     @Comment("经销商")
     private Dealer dealer;
 }
