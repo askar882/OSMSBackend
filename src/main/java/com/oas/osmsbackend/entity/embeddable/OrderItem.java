@@ -9,6 +9,7 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -23,12 +24,22 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class OrderItem {
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
     @NotNull
     @Comment("购买的商品")
     private Product product;
 
+    @Comment("商品单价")
+    private Double price;
+
     @NotNull
     @Comment("购买数量")
     private Integer count;
+
+    @PrePersist
+    protected void prePersist() {
+        if (this.price == null) {
+            this.price = this.product.getPrice();
+        }
+    }
 }

@@ -75,7 +75,7 @@ public class Order {
      */
     public Double getTotalCost() {
         return this.orderItems.stream()
-                .map(item -> item.getProduct().getPrice() * item.getCount())
+                .map(item -> item.getPrice() * item.getCount())
                 .mapToDouble(Double::doubleValue)
                 .sum();
     }
@@ -96,8 +96,8 @@ public class Order {
 
     @PrePersist
     protected void prePersist() {
-        if (orderTime == null) {
-            orderTime = new Date();
+        if (this.orderTime == null) {
+            this.orderTime = new Date();
         }
     }
 }
