@@ -1,4 +1,4 @@
-package com.oas.osmsbackend.domain.embeddable;
+package com.oas.osmsbackend.entity.embeddable;
 
 import lombok.Getter;
 import lombok.Setter;

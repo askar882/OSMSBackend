@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.util;
 
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,4 +1,4 @@
-package com.oas.osmsbackend.domain;
+package com.oas.osmsbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

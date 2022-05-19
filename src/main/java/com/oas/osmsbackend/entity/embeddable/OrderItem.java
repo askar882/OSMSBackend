@@ -1,6 +1,6 @@
-package com.oas.osmsbackend.domain.embeddable;
+package com.oas.osmsbackend.entity.embeddable;
 
-import com.oas.osmsbackend.domain.Product;
+import com.oas.osmsbackend.entity.Product;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

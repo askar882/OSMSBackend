@@ -1,4 +1,4 @@
-package com.oas.osmsbackend.domain;
+package com.oas.osmsbackend.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

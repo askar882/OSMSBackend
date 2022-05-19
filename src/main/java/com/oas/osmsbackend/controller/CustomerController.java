@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.domain.Customer;
+import com.oas.osmsbackend.entity.Customer;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;

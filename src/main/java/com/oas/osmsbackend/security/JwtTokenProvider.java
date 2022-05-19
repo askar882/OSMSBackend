@@ -1,7 +1,7 @@
 package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import io.jsonwebtoken.Claims;

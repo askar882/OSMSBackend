@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.repository;
 
-import com.oas.osmsbackend.domain.Customer;
+import com.oas.osmsbackend.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

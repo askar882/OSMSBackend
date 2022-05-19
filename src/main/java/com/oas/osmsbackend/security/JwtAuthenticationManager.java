@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.security;
 
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;

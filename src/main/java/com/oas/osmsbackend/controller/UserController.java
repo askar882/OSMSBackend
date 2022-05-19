@@ -2,7 +2,7 @@ package com.oas.osmsbackend.controller;
 
 import com.oas.osmsbackend.annotaion.CurrentUser;
 import com.oas.osmsbackend.annotaion.HasRole;
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.service.UserService;

@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;

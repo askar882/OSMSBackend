@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.service;
 
-import com.oas.osmsbackend.domain.Customer;
+import com.oas.osmsbackend.entity.Customer;
 import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;

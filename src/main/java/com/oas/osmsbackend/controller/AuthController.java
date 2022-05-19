@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
 import com.oas.osmsbackend.service.UserService;

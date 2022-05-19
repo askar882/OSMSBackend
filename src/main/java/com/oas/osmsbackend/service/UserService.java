@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.service;
 
-import com.oas.osmsbackend.domain.User;
+import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
 import com.oas.osmsbackend.util.RequestUtil;

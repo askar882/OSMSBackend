@@ -1,7 +1,7 @@
-package com.oas.osmsbackend.domain;
+package com.oas.osmsbackend.entity;
 
-import com.oas.osmsbackend.domain.embeddable.Address;
-import com.oas.osmsbackend.domain.embeddable.OrderItem;
+import com.oas.osmsbackend.entity.embeddable.Address;
+import com.oas.osmsbackend.entity.embeddable.OrderItem;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

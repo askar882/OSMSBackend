@@ -1,6 +1,6 @@
-package com.oas.osmsbackend.domain;
+package com.oas.osmsbackend.entity;
 
-import com.oas.osmsbackend.domain.embeddable.Address;
+import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
