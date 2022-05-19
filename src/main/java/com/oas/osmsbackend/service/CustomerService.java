@@ -1,11 +1,14 @@
 package com.oas.osmsbackend.service;
 
 import com.oas.osmsbackend.domain.Customer;
+import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityExistsException;
 import java.util.List;
 
 /**
@@ -29,11 +32,35 @@ public class CustomerService {
     }
 
     public Customer get(Long customerId) {
-        return customerRepository.getById(customerId);
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with ID '" + customerId + "' not found."));
     }
 
     public Customer update(Long customerId, Customer customer) {
-        return customer;
+        Customer oldCustomer = get(customerId);
+        if (!StringUtils.hasText(customer.getPhone())) {
+            customer.setPhone(oldCustomer.getPhone());
+        } else if (!oldCustomer.getPhone().equals(customer.getPhone())
+                && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
+            throw new EntityExistsException("Customer with phone number '" + customer.getPhone() + "' already exists.");
+        }
+        if (!StringUtils.hasText(customer.getName())) {
+            customer.setName(oldCustomer.getName());
+        }
+        if (customer.getGender() == null) {
+            customer.setGender(oldCustomer.getGender());
+        }
+        if (customer.getEmail() == null) {
+            customer.setEmail(oldCustomer.getEmail());
+        }
+        if (customer.getBirthDate() == null) {
+            customer.setBirthDate(oldCustomer.getBirthDate());
+        }
+        if (customer.getAddresses() == null) {
+            customer.setAddresses(oldCustomer.getAddresses());
+        }
+        customer.setOrders(oldCustomer.getOrders());
+        return customerRepository.save(customer);
     }
 
     public void delete(Long customerId) {

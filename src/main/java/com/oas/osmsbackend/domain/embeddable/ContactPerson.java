@@ -9,7 +9,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 联系人信息。
@@ -27,11 +27,11 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class ContactPerson {
-    @NotNull
+    @NotBlank
     @Comment("联系人姓名")
     private String name;
 
-    @NotNull
+    @NotBlank
     @Comment("联系人电话")
     private String phone;
 

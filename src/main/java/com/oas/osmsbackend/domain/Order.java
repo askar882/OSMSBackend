@@ -22,6 +22,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Set;
@@ -47,6 +49,8 @@ public class Order {
     private Long id;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @NotEmpty
+    @Valid
     @Comment("商品清单")
     private Set<OrderItem> orderItems;
 

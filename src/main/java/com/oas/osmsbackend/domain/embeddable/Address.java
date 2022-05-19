@@ -6,7 +6,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 地址。
@@ -19,27 +19,27 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class Address {
-    @NotNull
+    @NotBlank
     @Comment("省份/地区")
     private String province;
 
-    @NotNull
+    @NotBlank
     @Comment("城市")
     private String city;
 
-    @NotNull
+    @NotBlank
     @Comment("区/县")
     private String district;
 
-    @NotNull
+    @NotBlank
     @Comment("街道/镇")
     private String street;
 
-    @NotNull
+    @NotBlank
     @Comment("详细地址")
     private String address;
 
-    @NotNull
+    @NotBlank
     @Comment("邮编")
     private String zip;
 }

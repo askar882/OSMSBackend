@@ -19,6 +19,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -42,24 +44,28 @@ public class Dealer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Comment("经销商名称")
     private String name;
 
     @Embedded
     @NotNull
+    @Valid
     @Comment("联系人")
     private ContactPerson contact;
 
+    @NotBlank
     @Comment("联系电话")
     private String phone;
 
     @Embedded
     @NotNull
+    @Valid
     @Comment("地址")
     private Address address;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Valid
     @Comment("销售的商品")
     private Set<Product> products;
 }

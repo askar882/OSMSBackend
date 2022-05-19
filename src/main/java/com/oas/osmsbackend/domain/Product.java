@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -37,15 +38,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Comment("商品编号")
     private String code;
 
-    @NotNull
+    @NotBlank
     @Comment("商品名称")
     private String name;
 
-    @NotNull
+    @NotBlank
     @Comment("商品详情")
     private String description;
 

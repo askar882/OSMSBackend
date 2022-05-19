@@ -1,9 +1,11 @@
 package com.oas.osmsbackend.handler;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,7 +38,7 @@ public class RestExceptionHandler {
      *
      * @param request 请求。
      * @param ex 抛出的异常。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
@@ -49,7 +51,7 @@ public class RestExceptionHandler {
      * 处理请求错误，要求的请求体未提供，返回{@link ErrorResponse}。
      *
      * @param request 请求。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -67,7 +69,7 @@ public class RestExceptionHandler {
      *
      * @param request 请求。
      * @param ex 抛出的异常。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Throwable.class)
@@ -81,7 +83,7 @@ public class RestExceptionHandler {
      *
      * @param request 请求。
      * @param ex 抛出的异常。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EntityExistsException.class)
@@ -95,7 +97,7 @@ public class RestExceptionHandler {
      *
      * @param request 请求。
      * @param ex 抛出的异常。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
@@ -109,21 +111,30 @@ public class RestExceptionHandler {
      *
      * @param request 请求。
      * @param ex 抛出的异常。
-     * @return {@link ErrorResponse}实例
+     * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
             // 账号未找到，手动抛出
             AccountNotFoundException.class,
             // 删除不存在的资源时JPA抛出的异常
-            EmptyResultDataAccessException.class})
+            EmptyResultDataAccessException.class,
+            // 资源未找到异常
+            ResourceNotFoundException.class})
     public ErrorResponse notFound(HttpServletRequest request, Throwable ex) {
         logException(request, ex);
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
+    /**
+     * 处理SQL验证错误，包括空值验证、唯一值验证等抛出的异常。
+     *
+     * @param request 请求。
+     * @param ex 抛出的异常。
+     * @return {@link ErrorResponse}实例。
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(TransactionSystemException.class)
+    @ExceptionHandler({TransactionSystemException.class, DataIntegrityViolationException.class})
     public ErrorResponse validationException(HttpServletRequest request, Throwable ex) {
         logException(request, ex);
         Throwable rootCause = NestedExceptionUtils.getRootCause(ex);

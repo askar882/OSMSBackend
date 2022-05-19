@@ -28,6 +28,7 @@ public class OrderItem {
     @Comment("购买的商品")
     private Product product;
 
+    @NotNull
     @Comment("购买数量")
     private Integer count;
 }

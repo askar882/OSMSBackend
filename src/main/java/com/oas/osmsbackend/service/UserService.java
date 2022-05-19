@@ -58,6 +58,7 @@ public class UserService {
         } else {
             user.setRoles(oldUser.getRoles());
         }
+        user.setId(oldUser.getId());
         return userRepository.save(user);
     }
 

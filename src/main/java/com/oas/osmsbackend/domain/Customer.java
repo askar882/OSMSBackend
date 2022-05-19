@@ -22,6 +22,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
@@ -47,7 +50,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Comment("姓名")
     private String name;
 
@@ -56,7 +59,7 @@ public class Customer {
     @Comment("性别")
     private Gender gender;
 
-    @NotNull
+    @NotBlank
     @Column(unique = true)
     @Comment("电话")
     private String phone;
@@ -69,6 +72,8 @@ public class Customer {
     private Date birthDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @NotEmpty
+    @Valid
     @Comment("地址")
     private Set<Address> addresses;
 

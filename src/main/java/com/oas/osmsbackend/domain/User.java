@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -52,12 +52,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Column(unique = true)
     @Comment("用户名")
     private String username;
 
-    @NotNull
+    @NotBlank
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Comment("用户密码")
     private String password;
