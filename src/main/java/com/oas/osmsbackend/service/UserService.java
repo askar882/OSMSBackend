@@ -65,12 +65,9 @@ public class UserService {
                 roles = new HashSet<>();
             }
             roles.add(Role.USER);
-            user.setRoles(roles);
-        } else {
-            user.setRoles(oldUser.getRoles());
+            oldUser.setRoles(roles);
         }
-        user.setId(oldUser.getId());
-        return userRepository.save(user);
+        return userRepository.save(oldUser);
     }
 
 

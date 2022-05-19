@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,13 +53,13 @@ public class AuthHelper {
                         .id(1L)
                         .username(ADMIN_USER)
                         .password(passwordEncoder.encode(ADMIN_USER))
-                        .roles(Stream.of(Role.ADMIN, Role.USER).collect(Collectors.toSet()))
+                        .roles(Stream.of(Role.ADMIN, Role.USER).collect(Collectors.toCollection(HashSet::new)))
                         .build(),
                 User.builder()
                         .id(2L)
                         .username(NORMAL_USER)
                         .password(passwordEncoder.encode(NORMAL_USER))
-                        .roles(Collections.singleton(Role.USER))
+                        .roles(new HashSet<>(Collections.singleton(Role.USER)))
                         .build()
         );
         userRepository.saveAllAndFlush(users);

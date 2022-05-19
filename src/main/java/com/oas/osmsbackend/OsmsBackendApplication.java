@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,7 @@ public class OsmsBackendApplication {
                     .roles(
                             Arrays.stream(data.get(2).split(","))
                                     .map(Role::valueOf)
-                                    .collect(Collectors.toSet()))
+                                    .collect(Collectors.toCollection(HashSet::new)))
                     .build()));
             log.debug("Printing all users...");
             userRepository
