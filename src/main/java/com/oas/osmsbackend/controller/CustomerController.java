@@ -53,7 +53,7 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public DataResponse read(@PathVariable Long customerId) {
         return new DataResponse() {{
-            put("customer", customerService.get(customerId));
+            put("customer", customerService.read(customerId));
         }};
     }
 

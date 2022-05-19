@@ -6,7 +6,6 @@ import com.oas.osmsbackend.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityExistsException;
 import java.util.List;
@@ -31,39 +30,42 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer get(Long customerId) {
+    public Customer read(Long customerId) {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer with ID '" + customerId + "' not found."));
     }
 
     public Customer update(Long customerId, Customer customer) {
-        Customer oldCustomer = get(customerId);
-        if (!StringUtils.hasText(customer.getPhone())) {
-            customer.setPhone(oldCustomer.getPhone());
-        } else if (!oldCustomer.getPhone().equals(customer.getPhone())
-                && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
-            throw new EntityExistsException("Customer with phone number '" + customer.getPhone() + "' already exists.");
+        Customer oldCustomer = read(customerId);
+        if (customer.getPhone() != null) {
+            if (!oldCustomer.getPhone().equals(customer.getPhone())
+                    && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
+                throw new EntityExistsException("Customer with phone number '" + customer.getPhone() + "' already exists.");
+            }
+            oldCustomer.setPhone(customer.getPhone());
         }
-        if (!StringUtils.hasText(customer.getName())) {
-            customer.setName(oldCustomer.getName());
+        if (customer.getName() != null) {
+            oldCustomer.setName(customer.getName());
         }
-        if (customer.getGender() == null) {
-            customer.setGender(oldCustomer.getGender());
+        if (customer.getGender() != null) {
+            oldCustomer.setGender(customer.getGender());
         }
-        if (customer.getEmail() == null) {
-            customer.setEmail(oldCustomer.getEmail());
+        if (customer.getEmail() != null) {
+            oldCustomer.setEmail(customer.getEmail());
         }
-        if (customer.getBirthDate() == null) {
-            customer.setBirthDate(oldCustomer.getBirthDate());
+        if (customer.getBirthDate() != null) {
+            oldCustomer.setBirthDate(customer.getBirthDate());
         }
-        if (customer.getAddresses() == null) {
-            customer.setAddresses(oldCustomer.getAddresses());
+        if (customer.getAddresses() != null) {
+            oldCustomer.setAddresses(customer.getAddresses());
         }
-        customer.setOrders(oldCustomer.getOrders());
-        return customerRepository.save(customer);
+        if (customer.getOrders() != null) {
+            oldCustomer.setOrders(customer.getOrders());
+        }
+        return customerRepository.save(oldCustomer);
     }
 
     public void delete(Long customerId) {
-        customerRepository.deleteById(customerId);
+        customerRepository.delete(read(customerId));
     }
 }
