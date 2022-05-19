@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.entity.embeddable.OrderItem;
 import lombok.AccessLevel;
@@ -55,9 +56,10 @@ public class Order {
     private Set<OrderItem> orderItems;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
+    @JoinColumn(name = "customer_id", updatable = false)
     @NotNull
     @Comment("下单客户")
+    @JsonIgnoreProperties("orders")
     private Customer customer;
 
     @Embedded

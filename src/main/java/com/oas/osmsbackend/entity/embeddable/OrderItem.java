@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class OrderItem {
     @ManyToOne
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", updatable = false)
     @NotNull
     @Comment("购买的商品")
     private Product product;

@@ -1,6 +1,6 @@
 package com.oas.osmsbackend.handler;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JacksonException;
 import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +15,7 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityExistsException;
 import javax.security.auth.login.AccountNotFoundException;
@@ -54,11 +55,12 @@ public class RestExceptionHandler {
      * @return {@link ErrorResponse}实例。
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
     public ErrorResponse requestBodyMissing(HttpServletRequest request, Throwable ex) {
         logException(request, ex);
         String msg = "Required request body is missing or invalid.";
-        if (NestedExceptionUtils.getRootCause(ex) instanceof JsonParseException) {
+        if (NestedExceptionUtils.getRootCause(ex) instanceof JacksonException
+                || ex instanceof MethodArgumentTypeMismatchException) {
             msg = "Invalid JSON data.";
         }
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), msg);
