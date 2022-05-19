@@ -1,8 +1,8 @@
 package com.oas.osmsbackend.controller;
 
-import com.oas.osmsbackend.entity.Customer;
+import com.oas.osmsbackend.entity.Dealer;
 import com.oas.osmsbackend.response.DataResponse;
-import com.oas.osmsbackend.service.CustomerService;
+import com.oas.osmsbackend.service.DealerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,59 +19,59 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 客户控制器。
+ * 经销商控制器。
  *
  * @author askar882
- * @date 2022/05/16
+ * @date 2022/05/19
  */
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/dealers")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "客户控制器", description = "处理管理客户的请求")
-public class CustomerController {
-    private final CustomerService customerService;
-
+@Tag(name = "经销商控制器", description = "处理管理经销商的请求")
+public class DealerController {
+    private final DealerService dealerService;
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "添加客户")
-    public DataResponse create(@RequestBody Customer customer) {
+    @Operation(summary = "添加经销商")
+    public DataResponse create(@RequestBody Dealer dealer) {
         return new DataResponse() {{
-            put("customer", customerService.create(customer));
+            put("dealer", dealerService.create(dealer));
         }};
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "列取客户")
+    @Operation(summary = "列取经销商")
     public DataResponse list() {
         return new DataResponse() {{
-            put("customers", customerService.list());
+            put("dealers", dealerService.list());
         }};
     }
 
-    @GetMapping("/{customerId}")
+    @GetMapping("/{dealerId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "获取客户数据")
-    public DataResponse read(@PathVariable Long customerId) {
+    @Operation(summary = "获取经销商数据")
+    public DataResponse read(@PathVariable Long dealerId) {
         return new DataResponse() {{
-            put("customer", customerService.read(customerId));
+            put("dealer", dealerService.read(dealerId));
         }};
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping("/{dealerId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Operation(summary = "更新客户")
-    public DataResponse update(@PathVariable Long customerId, @RequestBody Customer customer) {
+    @Operation(summary = "更新经销商")
+    public DataResponse update(@PathVariable Long dealerId, @RequestBody Dealer dealer) {
         return new DataResponse() {{
-            put("customer", customerService.update(customerId, customer));
+            put("dealer", dealerService.update(dealerId, dealer));
         }};
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping("/{dealerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "删除客户")
-    public void delete(@PathVariable Long customerId) {
-        customerService.delete(customerId);
+    @Operation(summary = "删除经销商")
+    public void delete(@PathVariable Long dealerId) {
+        dealerService.delete(dealerId);
     }
 }

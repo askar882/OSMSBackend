@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,6 +46,7 @@ public class Dealer {
     private Long id;
 
     @NotBlank
+    @Column(unique = true)
     @Comment("经销商名称")
     private String name;
 
