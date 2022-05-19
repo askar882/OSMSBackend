@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,10 +88,10 @@ public class AppConfiguration {
     private String authoritiesKey = "roles";
 
     /**
-     * JWT Token有效时间，单位秒。
+     * JWT Token有效时间。
      */
     @NotNull
-    private Long tokenValidity;
+    private Duration tokenValidity;
 
     /**
      * JWT加密密钥。

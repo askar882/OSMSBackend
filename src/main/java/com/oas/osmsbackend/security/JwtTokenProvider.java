@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
@@ -66,7 +65,7 @@ public class JwtTokenProvider {
         if (userId != null) {
             claims.put("id", userId);
         }
-        Date validity = new Date(System.currentTimeMillis() + Duration.ofSeconds(appConfiguration.getTokenValidity()).toMillis());
+        Date validity = new Date(System.currentTimeMillis() + appConfiguration.getTokenValidity().toMillis());
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(validity)
