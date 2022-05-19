@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityExistsException;
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -31,10 +32,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User create(User user) {
-        userRepository.findByUsername(user.getUsername()).ifPresent((u) -> {
+        userRepository.findByUsername(user.getUsername()).ifPresent(u -> {
             throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
         });
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>(Collections.singleton(Role.USER)));
+        }
         log.debug("Registered user {}.", user);
         return userRepository.save(user);
     }
@@ -63,7 +67,7 @@ public class UserService {
         if (RequestUtil.INSTANCE.currentUser().getRoles().contains(Role.ADMIN)) {
             Set<Role> roles = user.getRoles();
             if (roles == null) {
-                roles = new HashSet<>();
+                roles = oldUser.getRoles();
             }
             roles.add(Role.USER);
             oldUser.setRoles(roles);
