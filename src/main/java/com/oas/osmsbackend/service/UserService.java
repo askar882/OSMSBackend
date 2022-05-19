@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityExistsException;
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +67,7 @@ public class UserService {
             }
             roles.add(Role.USER);
             oldUser.setRoles(roles);
+            oldUser.setModificationTime(new Date());
         }
         return userRepository.save(oldUser);
     }
