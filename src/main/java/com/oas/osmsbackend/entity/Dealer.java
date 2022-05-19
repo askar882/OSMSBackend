@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.entity.embeddable.ContactPerson;
 import lombok.AllArgsConstructor;
@@ -69,5 +70,6 @@ public class Dealer {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "dealer")
     @Valid
     @Comment("销售的商品")
+    @JsonIgnoreProperties("dealer")
     private Set<Product> products;
 }

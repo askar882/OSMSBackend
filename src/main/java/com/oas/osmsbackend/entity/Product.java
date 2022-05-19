@@ -1,5 +1,6 @@
 package com.oas.osmsbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.Comment;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -57,8 +59,9 @@ public class Product {
     private Double price;
 
     @ManyToOne
-    @JoinColumn(name = "dealer_id", insertable = false, updatable = false)
+    @JoinColumn(name = "dealer_id", updatable = false)
     @NotNull
     @Comment("经销商")
+    @JsonIgnoreProperties("products")
     private Dealer dealer;
 }
