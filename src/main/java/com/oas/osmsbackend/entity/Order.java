@@ -64,6 +64,7 @@ public class Order {
 
     @Embedded
     @NotNull
+    @Valid
     @Comment("收货地址")
     private Address address;
 
