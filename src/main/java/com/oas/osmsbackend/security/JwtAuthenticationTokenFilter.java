@@ -50,7 +50,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        log.debug("Filtering request URI: '{}'", request.getRequestURI());
+        log.debug("Filtering {} request URI: '{}'.", request.getMethod(), request.getRequestURI());
         if (!requiresAuthentication(request)) {
             log.debug("Authentication ignored.");
             chain.doFilter(request, response);
