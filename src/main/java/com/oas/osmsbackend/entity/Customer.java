@@ -28,7 +28,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -81,5 +80,5 @@ public class Customer {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "customer")
     @Comment("订单")
     @JsonIgnoreProperties("customer")
-    private Set<Order> orders = new HashSet<>();
+    private Set<Order> orders;
 }
