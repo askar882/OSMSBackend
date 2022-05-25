@@ -1,7 +1,6 @@
 package com.oas.osmsbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.entity.embeddable.ContactPerson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,11 +60,9 @@ public class Dealer {
     @Comment("联系电话")
     private String phone;
 
-    @Embedded
-    @NotNull
-    @Valid
+    @NotBlank
     @Comment("地址")
-    private Address address;
+    private String address;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "dealer")
     @Valid

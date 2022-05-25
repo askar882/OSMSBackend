@@ -1,7 +1,6 @@
 package com.oas.osmsbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -73,9 +71,8 @@ public class Customer {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @NotEmpty
-    @Valid
     @Comment("地址")
-    private Set<Address> addresses;
+    private Set<String> addresses;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "customer")
     @Comment("订单")

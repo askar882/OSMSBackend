@@ -1,7 +1,6 @@
 package com.oas.osmsbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.oas.osmsbackend.entity.embeddable.Address;
 import com.oas.osmsbackend.entity.embeddable.OrderItem;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,6 @@ import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -62,11 +61,9 @@ public class Order {
     @JsonIgnoreProperties("orders")
     private Customer customer;
 
-    @Embedded
-    @NotNull
-    @Valid
+    @NotBlank
     @Comment("收货地址")
-    private Address address;
+    private String address;
 
     @Setter(AccessLevel.NONE)
     @Comment("订单总价")
