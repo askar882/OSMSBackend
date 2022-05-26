@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -49,6 +51,7 @@ public class Order {
     private Long id;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
     @NotEmpty
     @Valid
     @Comment("商品清单")
