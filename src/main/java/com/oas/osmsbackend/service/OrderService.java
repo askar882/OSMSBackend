@@ -71,7 +71,7 @@ public class OrderService {
             if (oldOrder.getShipmentTime() == null) {
                 throw new IllegalStateException("Shipment might not have started for this order.");
             }
-            oldOrder.setShipmentTime(order.getShipmentTime());
+            oldOrder.setDeliveryTime(order.getDeliveryTime());
         }
         return orderRepository.save(oldOrder);
     }
