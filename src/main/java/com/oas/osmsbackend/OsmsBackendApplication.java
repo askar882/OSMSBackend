@@ -12,7 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author askar882
@@ -30,17 +32,22 @@ public class OsmsBackendApplication {
     public CommandLineRunner dataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             log.debug("Initializing user data...");
-            Arrays.asList(
-                    Arrays.asList("admin", "admin", "USER,ADMIN"),
-                    Arrays.asList("askar", "askar", "USER")
-            ).forEach(data -> userRepository.saveAndFlush(User.builder()
-                    .username(data.get(0))
-                    .password(passwordEncoder.encode(data.get(1)))
-                    .roles(
-                            Arrays.stream(data.get(2).split(","))
+            List<User> users = Stream.of(
+                            Arrays.asList("admin", "admin", "USER,ADMIN"),
+                            Arrays.asList("askar", "askar", "USER")
+                    ).map(data -> User.builder()
+                            .username(data.get(0))
+                            .password(passwordEncoder.encode(data.get(1)))
+                            .roles(Arrays.stream(data.get(2).split(","))
                                     .map(Role::valueOf)
                                     .collect(Collectors.toCollection(HashSet::new)))
-                    .build()));
+                            .build())
+                    .collect(Collectors.toList());
+            try {
+                userRepository.saveAllAndFlush(users);
+            } catch (Throwable e) {
+                log.debug("User initialization failed, continuing anyway.", e);
+            }
             log.debug("Printing all users...");
             userRepository
                     .findAll()

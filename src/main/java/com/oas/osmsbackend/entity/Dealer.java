@@ -64,7 +64,7 @@ public class Dealer {
     @Comment("地址")
     private String address;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "dealer")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "dealer")
     @Valid
     @Comment("销售的商品")
     @JsonIgnoreProperties("dealer")

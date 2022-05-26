@@ -10,15 +10,20 @@ spring:
     password: osms
   jpa:
     open-in-view: false
-    show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 logging:
   level:
     org.springframework: INFO
     org.springframework.security: INFO
     org.springframework.boot: INFO
+    org.hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
     com.oas: DEBUG
 app:
   version: 1.0.0
