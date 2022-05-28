@@ -6,7 +6,8 @@ import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
-import com.oas.osmsbackend.service.UserService;
+import com.oas.osmsbackend.security.RedisStore;
+import com.oas.osmsbackend.util.RequestUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserService userService;
+    private final RedisStore redisStore;
 
     /**
      * 用户登录，成功返回Token，失败抛异常。
@@ -62,16 +64,26 @@ public class AuthController {
     }
 
     /**
-     * 登出当前帐号或管理员将在线用户踢下线。
-     *
-     * @param userId 登出的用户的ID。
+     * 登出当前帐号。
      */
     @DeleteMapping("logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "登出", description = "主动登出当前帐号。")
+    public void logout() {
+        logout(RequestUtil.INSTANCE.currentUser().getId());
+    }
+
+    /**
+     * 将在线用户踢下线。
+     *
+     * @param userId 要踢的的用户的ID。
+     */
+    @DeleteMapping( "logout/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @CurrentUser
     @HasRole(Role.ADMIN)
-    @Operation(summary = "登出", description = "主动登出或管理员将用户踢下线。")
-    public void logout(Long userId) {
-
+    @Operation(summary = "登出", description = "将用户踢下线。")
+    public void logout(@PathVariable Long userId) {
+        redisStore.deleteToken(userId);
     }
 }

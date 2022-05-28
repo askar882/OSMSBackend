@@ -76,7 +76,7 @@ public class UserService {
             oldUser.setModificationTime(new Date());
         }
         User newUser = userRepository.save(oldUser);
-        redisStore.deleteToken(oldUser.getUsername());
+        redisStore.deleteToken(oldUser.getId());
         return newUser;
     }
 
@@ -87,6 +87,6 @@ public class UserService {
         }
         User user = read(userId);
         userRepository.delete(user);
-        redisStore.deleteToken(user.getUsername());
+        redisStore.deleteToken(userId);
     }
 }

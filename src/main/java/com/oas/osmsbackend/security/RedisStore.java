@@ -20,6 +20,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class RedisStore {
+    private static final String ID_KEY_PREFIX = "ID_";
+    private static final String TOKEN_KEY_PREFIX = "JWT_";
     private final AppConfiguration appConfiguration;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -31,23 +33,28 @@ public class RedisStore {
      */
     public void saveToken(User user, String token) {
         // 一个用户只能有一个Token
-        deleteToken(user.getUsername());
-        redisTemplate.opsForValue().set(user.getUsername(), token, appConfiguration.getTokenValidity());
-        redisTemplate.opsForValue().set(token, JsonUtil.INSTANCE.toJson(user, false), appConfiguration.getTokenValidity());
+        deleteToken(user.getId());
+        redisTemplate.opsForValue().set(ID_KEY_PREFIX + user.getId(),
+                token,
+                appConfiguration.getTokenValidity());
+        redisTemplate.opsForValue().set(TOKEN_KEY_PREFIX + token,
+                JsonUtil.INSTANCE.toJson(user, false),
+                appConfiguration.getTokenValidity());
         log.debug("Saved JWT token for user '{}'.", user.getUsername());
     }
 
     /**
      * 删除username对应的Token，将用户踢下线时使用。
      *
-     * @param username 需要踢掉的用户的用户名。
+     * @param userId 需要踢掉的用户的用户名。
      */
-    public void deleteToken(String username) {
-        String token = redisTemplate.opsForValue().get(username);
+    public void deleteToken(Long userId) {
+        String key = ID_KEY_PREFIX + userId;
+        String token = redisTemplate.opsForValue().get(key);
         if (token != null) {
-            redisTemplate.delete(username);
-            redisTemplate.delete(token);
-            log.debug("Deleted token data for user '{}'.", username);
+            redisTemplate.delete(key);
+            redisTemplate.delete(TOKEN_KEY_PREFIX + token);
+            log.debug("Deleted token data for user '{}'.", userId);
         }
     }
 
@@ -58,6 +65,6 @@ public class RedisStore {
      * @return {@link User}实例的{@link Optional}对象。
      */
     public Optional<User> getUser(String token) {
-        return JsonUtil.INSTANCE.fromJson(redisTemplate.opsForValue().get(token), User.class);
+        return JsonUtil.INSTANCE.fromJson(redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + token), User.class);
     }
 }

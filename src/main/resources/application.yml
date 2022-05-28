@@ -37,9 +37,6 @@ app:
       pattern: /auth/login
       method: POST
     -
-      pattern: /auth/register
-      method: POST
-    -
       pattern: /docs/**
       method: GET
     -
