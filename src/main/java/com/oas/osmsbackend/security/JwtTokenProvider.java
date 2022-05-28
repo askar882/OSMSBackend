@@ -2,7 +2,6 @@ package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
 import com.oas.osmsbackend.entity.User;
-import com.oas.osmsbackend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,13 +28,11 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class JwtTokenProvider {
-    private final UserRepository userRepository;
     private final SecretKey secretKey;
     private final AppConfiguration appConfiguration;
     private final RedisStore redisStore;
 
-    public JwtTokenProvider(UserRepository userRepository, AppConfiguration appConfiguration, RedisStore redisStore) {
-        this.userRepository = userRepository;
+    public JwtTokenProvider(AppConfiguration appConfiguration, RedisStore redisStore) {
         this.appConfiguration = appConfiguration;
         this.redisStore = redisStore;
         String secret = Base64.getEncoder().encodeToString(appConfiguration.getJwtSecret().getBytes());

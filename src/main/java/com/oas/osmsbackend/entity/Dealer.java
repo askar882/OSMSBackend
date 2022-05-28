@@ -1,6 +1,5 @@
 package com.oas.osmsbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oas.osmsbackend.entity.embeddable.ContactPerson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,20 +9,16 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 /**
  * 经销商。
@@ -63,10 +58,4 @@ public class Dealer {
     @NotBlank
     @Comment("地址")
     private String address;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "dealer")
-    @Valid
-    @Comment("销售的商品")
-    @JsonIgnoreProperties("dealer")
-    private Set<Product> products;
 }

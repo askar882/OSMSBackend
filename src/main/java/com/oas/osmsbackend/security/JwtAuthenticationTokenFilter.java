@@ -2,7 +2,6 @@ package com.oas.osmsbackend.security;
 
 import com.oas.osmsbackend.config.AppConfiguration;
 import com.oas.osmsbackend.util.ResponseUtil;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

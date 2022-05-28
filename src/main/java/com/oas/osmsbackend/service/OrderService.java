@@ -35,7 +35,7 @@ public class OrderService {
                 .id(customer.getId())
                 .phone(customer.getPhone())
                 .build()))
-                .orElseThrow(() -> new IllegalArgumentException("Referenced customer doesn't exist.",
+                .orElseThrow(() -> new IllegalArgumentException("客户不存在",
                         new ResourceNotFoundException("Customer not found.")));
         order.setCustomer(customer);
         order.getOrderItems().forEach(orderItem -> {
@@ -44,7 +44,7 @@ public class OrderService {
                     .id(product.getId())
                     .code(product.getCode())
                     .build()))
-                    .orElseThrow(() -> new IllegalArgumentException("Referenced product doesn't exist.",
+                    .orElseThrow(() -> new IllegalArgumentException("产品不存在",
                             new ResourceNotFoundException(("Product doesn't exist."))));
             orderItem.setProduct(product);
             orderItem.setPrice(product.getPrice());
@@ -58,7 +58,7 @@ public class OrderService {
 
     public Order read(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order with ID '" + orderId + "' not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + orderId + "' 的订单不存在"));
     }
 
     public Order update(Long orderId, Order order) {

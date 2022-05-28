@@ -3,12 +3,14 @@ package com.oas.osmsbackend.service;
 import com.oas.osmsbackend.entity.Customer;
 import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.repository.CustomerRepository;
+import com.oas.osmsbackend.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
-import java.util.List;
 
 /**
  * 客户服务。
@@ -22,21 +24,29 @@ import java.util.List;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
-    public Customer create(Customer customer) {
-        return customerRepository.save(customer);
+    public DataResponse create(Customer customer) {
+        return new DataResponse() {{
+            put("customer", customerRepository.save(customer));
+        }};
     }
 
-    public List<Customer> list() {
-        return customerRepository.findAll();
+    public DataResponse list(Pageable pageable) {
+        Page<Customer> customerPage = customerRepository.findAll(pageable);
+        return new DataResponse() {{
+            put("customers", customerPage.getContent());
+            put("total", customerPage.getTotalElements());
+        }};
     }
 
-    public Customer read(Long customerId) {
-        return customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer with ID '" + customerId + "' not found."));
+    public DataResponse read(Long customerId) {
+        Customer customer = get(customerId);
+        return new DataResponse() {{
+            put("customer", customer);
+        }};
     }
 
-    public Customer update(Long customerId, Customer customer) {
-        Customer oldCustomer = read(customerId);
+    public DataResponse update(Long customerId, Customer customer) {
+        Customer oldCustomer = get(customerId);
         if (customer.getPhone() != null) {
             if (!oldCustomer.getPhone().equals(customer.getPhone())
                     && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
@@ -59,13 +69,17 @@ public class CustomerService {
         if (customer.getAddresses() != null) {
             oldCustomer.setAddresses(customer.getAddresses());
         }
-        if (customer.getOrders() != null) {
-            oldCustomer.setOrders(customer.getOrders());
-        }
-        return customerRepository.save(oldCustomer);
+        return new DataResponse() {{
+            put("customer", customerRepository.save(oldCustomer));
+        }};
     }
 
     public void delete(Long customerId) {
-        customerRepository.delete(read(customerId));
+        customerRepository.delete(get(customerId));
+    }
+
+    public Customer get(Long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + customerId + "' 的客户不存在"));
     }
 }

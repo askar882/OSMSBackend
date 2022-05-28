@@ -51,7 +51,7 @@ public class UserService {
 
     public User read(Long userId) throws AccountNotFoundException {
         return userRepository.findById(userId).orElseThrow(
-                () -> new AccountNotFoundException("User with ID '" + userId + "' is not found."));
+                () -> new AccountNotFoundException("ID为 '" + userId + "' 的用户不存在"));
     }
 
     public User update(Long userId, User user) throws AccountNotFoundException {

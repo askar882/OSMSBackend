@@ -32,7 +32,7 @@ public class DealerService {
 
     public Dealer read(Long dealerId) {
         return dealerRepository.findById(dealerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Dealer with ID '" + dealerId + "' not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + dealerId + "' 的经销商不存在"));
     }
 
     public Dealer update(Long dealerId, Dealer dealer) {

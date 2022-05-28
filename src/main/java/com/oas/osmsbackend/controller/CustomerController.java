@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,36 +37,29 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "添加客户")
     public DataResponse create(@RequestBody Customer customer) {
-        return new DataResponse() {{
-            put("customer", customerService.create(customer));
-        }};
+        return customerService.create(customer);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取客户")
-    public DataResponse list() {
-        return new DataResponse() {{
-            put("customers", customerService.list());
-        }};
+    public DataResponse list(Pageable pageable) {
+        log.debug("pageable: '{}'", pageable);
+        return customerService.list(pageable);
     }
 
     @GetMapping("/{customerId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "获取客户数据")
     public DataResponse read(@PathVariable Long customerId) {
-        return new DataResponse() {{
-            put("customer", customerService.read(customerId));
-        }};
+        return customerService.read(customerId);
     }
 
     @PutMapping("/{customerId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "更新客户")
     public DataResponse update(@PathVariable Long customerId, @RequestBody Customer customer) {
-        return new DataResponse() {{
-            put("customer", customerService.update(customerId, customer));
-        }};
+        return customerService.update(customerId, customer);
     }
 
     @DeleteMapping("/{customerId}")

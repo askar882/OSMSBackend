@@ -33,7 +33,7 @@ public class ProductService {
                         .id(dealer.getId())
                         .name(dealer.getName())
                         .build()))
-                .orElseThrow(() -> new IllegalArgumentException("Referenced dealer doesn't exist.",
+                .orElseThrow(() -> new IllegalArgumentException("经销商不存在",
                         new ResourceNotFoundException("Dealer not found.")));
         product.setDealer(dealer);
         return productRepository.save(product);
@@ -45,7 +45,7 @@ public class ProductService {
 
     public Product read(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with ID '" + productId + "' not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + productId + "' 的产品不存在"));
     }
 
     public Product update(Long productId, Product product) {

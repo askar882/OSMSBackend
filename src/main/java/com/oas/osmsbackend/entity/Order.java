@@ -1,6 +1,5 @@
 package com.oas.osmsbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.oas.osmsbackend.entity.embeddable.OrderItem;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -63,7 +62,6 @@ public class Order {
     @JoinColumn(name = "customer_id", updatable = false)
     @NotNull
     @Comment("下单客户")
-    @JsonIgnoreProperties("orders")
     private Customer customer;
 
     @NotBlank

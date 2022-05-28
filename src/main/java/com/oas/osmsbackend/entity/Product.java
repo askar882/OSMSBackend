@@ -1,6 +1,5 @@
 package com.oas.osmsbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,6 +60,5 @@ public class Product {
     @JoinColumn(name = "dealer_id", updatable = false)
     @NotNull
     @Comment("经销商")
-    @JsonIgnoreProperties("products")
     private Dealer dealer;
 }
