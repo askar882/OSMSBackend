@@ -66,6 +66,10 @@ public class User implements UserDetails {
     @Comment("用户角色")
     private Set<Role> roles;
 
+    @Builder.Default
+    @Comment("用户启用状态")
+    private Boolean enabled = true;
+
     @Column(nullable = false, updatable = false)
     @Comment("创建时间")
     private Date creationTime;
@@ -97,7 +101,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
     @PrePersist

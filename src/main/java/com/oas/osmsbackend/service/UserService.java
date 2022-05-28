@@ -73,6 +73,7 @@ public class UserService {
             }
             roles.add(Role.USER);
             oldUser.setRoles(roles);
+            oldUser.setEnabled(user.getEnabled());
             oldUser.setModificationTime(new Date());
         }
         User newUser = userRepository.save(oldUser);

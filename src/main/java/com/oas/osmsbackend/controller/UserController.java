@@ -5,6 +5,7 @@ import com.oas.osmsbackend.annotaion.HasRole;
 import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.response.DataResponse;
+import com.oas.osmsbackend.security.RedisStore;
 import com.oas.osmsbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,6 +38,7 @@ import javax.security.auth.login.AccountNotFoundException;
 @Tag(name = "用户管理控制器", description = "处理管理用户的请求，当前用户有ADMIN角色时可调用所有方法。")
 public class UserController {
     private final UserService userService;
+    private final RedisStore redisStore;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -53,6 +55,7 @@ public class UserController {
     public DataResponse list() {
         return new DataResponse() {{
             put("users", userService.list());
+            put("online", redisStore.listIds());
         }};
     }
 

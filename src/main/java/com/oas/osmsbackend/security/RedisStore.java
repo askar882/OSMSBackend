@@ -8,7 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Redis存储辅助类，用于管理JWT Token和{@link User}之间的联系。
@@ -66,5 +69,19 @@ public class RedisStore {
      */
     public Optional<User> getUser(String token) {
         return JsonUtil.INSTANCE.fromJson(redisTemplate.opsForValue().get(TOKEN_KEY_PREFIX + token), User.class);
+    }
+
+    /**
+     * 获取在线的所有用户的ID。
+     *
+     * @return 在线用户的ID列表。
+     */
+    public List<Long> listIds() {
+        return Optional.ofNullable(redisTemplate.keys(ID_KEY_PREFIX + '*'))
+                .map(keys -> keys.stream()
+                        .map(key -> key.substring(ID_KEY_PREFIX.length()))
+                        .map(Long::parseLong)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 }
