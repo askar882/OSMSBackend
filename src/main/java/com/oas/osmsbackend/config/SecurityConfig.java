@@ -86,6 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username '" + username + "' not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("用户 '" + username + "' 不存在"));
     }
 }

@@ -3,6 +3,7 @@ package com.oas.osmsbackend.service;
 import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
+import com.oas.osmsbackend.security.RedisStore;
 import com.oas.osmsbackend.util.RequestUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +31,11 @@ import java.util.Set;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisStore redisStore;
 
     public User create(User user) {
         userRepository.findByUsername(user.getUsername()).ifPresent(u -> {
-            throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
+            throw new EntityExistsException("用户 '" + user.getUsername() + "' 已存在");
         });
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRoles() == null) {
@@ -57,7 +59,7 @@ public class UserService {
         if (user.getUsername() != null) {
             if (!oldUser.getUsername().equals(user.getUsername())
                     && userRepository.findByUsername(user.getUsername()).isPresent()) {
-                throw new EntityExistsException("User '" + user.getUsername() + "' already exists.");
+                throw new EntityExistsException("用户 '" + user.getUsername() + "' 已存在");
             }
             oldUser.setUsername(user.getUsername());
         }
@@ -73,14 +75,18 @@ public class UserService {
             oldUser.setRoles(roles);
             oldUser.setModificationTime(new Date());
         }
-        return userRepository.save(oldUser);
+        User newUser = userRepository.save(oldUser);
+        redisStore.deleteToken(oldUser.getUsername());
+        return newUser;
     }
 
 
     public void delete(Long userId) throws AccountNotFoundException {
         if (RequestUtil.INSTANCE.currentUser().getId().equals(userId)) {
-            throw new IllegalStateException("Cannot perform delete action on self.");
+            throw new IllegalStateException("无法删除当前登录的用户");
         }
-        userRepository.delete(read(userId));
+        User user = read(userId);
+        userRepository.delete(user);
+        redisStore.deleteToken(user.getUsername());
     }
 }

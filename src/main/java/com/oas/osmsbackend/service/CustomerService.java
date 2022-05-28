@@ -40,7 +40,7 @@ public class CustomerService {
         if (customer.getPhone() != null) {
             if (!oldCustomer.getPhone().equals(customer.getPhone())
                     && customerRepository.findByPhone(customer.getPhone()).isPresent()) {
-                throw new EntityExistsException("Customer with phone number '" + customer.getPhone() + "' already exists.");
+                throw new EntityExistsException("客户电话号码 '" + customer.getPhone() + "' 已存在");
             }
             oldCustomer.setPhone(customer.getPhone());
         }

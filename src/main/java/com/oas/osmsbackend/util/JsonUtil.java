@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -93,7 +94,10 @@ public enum JsonUtil {
      * @param <T> 反序列化结果类型。
      */
     public <T> Optional<T> fromJson(String jsonString, Class<T> valueType, boolean unwrapRoot) {
-        ObjectReader objectReader = objectMapper.reader();
+        if (!StringUtils.hasText(jsonString)) {
+            return Optional.empty();
+        }
+        ObjectReader objectReader = objectMapper.reader().without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         if (unwrapRoot) {
             objectReader = objectReader.with(DeserializationFeature.UNWRAP_ROOT_VALUE);
         }
@@ -102,7 +106,7 @@ public enum JsonUtil {
             log.debug("Deserialized JSON '{}', result object: '{}'.", jsonString, object);
             return Optional.of(object);
         } catch (IOException e) {
-            log.debug("Failed to deserialize JSON string: '{}'.", jsonString);
+            log.debug("Failed to deserialize JSON string.", e);
         }
         return Optional.empty();
     }

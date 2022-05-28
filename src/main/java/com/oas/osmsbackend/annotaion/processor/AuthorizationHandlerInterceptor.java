@@ -68,7 +68,7 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
                 log.debug("Falling back to current user check.");
                 return false;
             }
-            throw new AccessDeniedException("Unauthorized role.");
+            throw new AccessDeniedException("未授权的角色");
         }
         log.debug("User '{}' has required role(s) '{}'.", currentUser.getUsername(), roles);
         return true;
@@ -90,13 +90,13 @@ public class AuthorizationHandlerInterceptor implements HandlerInterceptor {
                 log.debug("User ID extracted from request: '{}'.", userId);
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if (!userId.get().equals(((User) authentication.getPrincipal()).getId())) {
-                    throw new AccessDeniedException("Unauthorized user.");
+                    throw new AccessDeniedException("未授权的用户");
                 }
                 log.debug("Granted access.");
                 return true;
             }
             log.debug("Failed to extract user ID.");
-            throw new AccessDeniedException("Unable to identify user.");
+            throw new AccessDeniedException("无法验证用户身份");
         }
         return false;
     }

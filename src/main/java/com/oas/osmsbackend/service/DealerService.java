@@ -40,7 +40,7 @@ public class DealerService {
         if (dealer.getName() != null) {
             if (!oldDealer.getName().equals(dealer.getName())
                     && dealerRepository.findByName(dealer.getName()).isPresent()) {
-                throw new EntityExistsException("Dealer with name '" + dealer.getName() + "' already exists.");
+                throw new EntityExistsException("经销商 '" + dealer.getName() + "' 已存在");
             }
             oldDealer.setName(dealer.getName());
         }

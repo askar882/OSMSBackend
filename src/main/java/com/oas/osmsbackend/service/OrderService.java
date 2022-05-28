@@ -69,7 +69,7 @@ public class OrderService {
         if (order.getDeliveryTime() != null
                 && oldOrder.getDeliveryTime() == null) {
             if (oldOrder.getShipmentTime() == null) {
-                throw new IllegalStateException("Shipment might not have started for this order.");
+                throw new IllegalStateException("订单尚未开始运输");
             }
             oldOrder.setDeliveryTime(order.getDeliveryTime());
         }

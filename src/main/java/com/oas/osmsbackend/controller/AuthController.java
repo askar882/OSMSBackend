@@ -1,6 +1,9 @@
 package com.oas.osmsbackend.controller;
 
+import com.oas.osmsbackend.annotaion.CurrentUser;
+import com.oas.osmsbackend.annotaion.HasRole;
 import com.oas.osmsbackend.entity.User;
+import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.response.DataResponse;
 import com.oas.osmsbackend.security.JwtTokenProvider;
 import com.oas.osmsbackend.service.UserService;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,17 +62,16 @@ public class AuthController {
     }
 
     /**
-     * 注册用户，成功返回创建的{@link User}实例，失败抛异常。
+     * 登出当前帐号或管理员将在线用户踢下线。
      *
-     * @param user 注册的用户信息。
-     * @return 包含注册成功的 {@link User}实例的{@link DataResponse}。
+     * @param userId 登出的用户的ID。
      */
-    @PostMapping("register")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "注册用户", description = "使用提供的用户信息进行注册，用户名不得与现有用户重复，注册成功返回用户信息，失败抛出异常。")
-    public DataResponse register(@RequestBody User user) {
-        return new DataResponse() {{
-            put("user", userService.create(user));
-        }};
+    @DeleteMapping("logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CurrentUser
+    @HasRole(Role.ADMIN)
+    @Operation(summary = "登出", description = "主动登出或管理员将用户踢下线。")
+    public void logout(Long userId) {
+
     }
 }

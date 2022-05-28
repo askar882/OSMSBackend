@@ -61,20 +61,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             ResponseUtil.INSTANCE.writeError(
                     response,
                     HttpStatus.UNAUTHORIZED.value(),
-                    "JWT authentication header check failed.");
+                    "JWT消息头验证失败");
             return;
         }
         String token = header.substring(7);
         log.info("Extracted token: '{}'", token);
         try {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            log.debug("Authenticated.");
+            log.debug("Authenticated user '{}'.", authentication.getName());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException ex) {
-            String msg = "JWT token validation failed.";
-            if (ex instanceof ExpiredJwtException) {
-                msg = "JWT expired at " + ((ExpiredJwtException) ex).getClaims().getExpiration();
-            }
+            String msg = "无效Token";
             ResponseUtil.INSTANCE.writeError(
                     response,
                     HttpStatus.UNAUTHORIZED.value(),

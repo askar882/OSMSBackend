@@ -53,7 +53,7 @@ public class ProductService {
         if (product.getCode() != null) {
             if (!oldProduct.getCode().equals(product.getCode())
                     && productRepository.findByCode(product.getCode()).isPresent()) {
-                throw new EntityExistsException("Product with code '" + product.getCode() + "' already exists.");
+                throw new EntityExistsException("代码为 '" + product.getCode() + "' 的产品已存在");
             }
             oldProduct.setCode(product.getCode());
         }

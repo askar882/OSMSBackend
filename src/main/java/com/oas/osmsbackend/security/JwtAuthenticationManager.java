@@ -40,13 +40,13 @@ public class JwtAuthenticationManager implements AuthenticationManager {
         User user = (User) userDetailsService.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             log.debug("Provided password doesn't match for user '{}'.", username);
-            throw new BadCredentialsException("Bad credentials.");
+            throw new BadCredentialsException("用户名密码错误");
         }
         if (!user.isEnabled()) {
-            throw new DisabledException("User is disabled.");
+            throw new DisabledException("用户已被禁用");
         }
         var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
-        authenticationToken.setDetails(user.getId());
+        authenticationToken.setDetails(user);
         return authenticationToken;
     }
 }
