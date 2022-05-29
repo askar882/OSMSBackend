@@ -14,6 +14,8 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -78,5 +80,17 @@ public class WebConfig implements WebMvcConfigurer {
         converter.registerObjectMappersForType(ErrorResponse.class, m -> m.put(MediaType.APPLICATION_JSON, objectMapper));
         converter.registerObjectMappersForType(DataResponse.class, m -> m.put(MediaType.APPLICATION_JSON, objectMapper));
         return converter;
+    }
+
+    /**
+     * 配置请求未提供{@link Pageable}参数时，默认不分页。
+     *
+     * @return 自定义的 {@link PageableHandlerMethodArgumentResolverCustomizer}。
+     */
+    @Bean
+    public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
+        return resolver -> {
+            resolver.setFallbackPageable(Pageable.unpaged());
+        };
     }
 }
