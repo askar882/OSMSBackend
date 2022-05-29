@@ -7,12 +7,13 @@ import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.repository.CustomerRepository;
 import com.oas.osmsbackend.repository.OrderRepository;
 import com.oas.osmsbackend.repository.ProductRepository;
+import com.oas.osmsbackend.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 订单服务。
@@ -28,7 +29,7 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
 
-    public Order create(Order order) {
+    public DataResponse create(Order order) {
         Customer customer = order.getCustomer();
         // 只使用唯一值匹配客户。
         customer = customerRepository.findOne(Example.of(Customer.builder()
@@ -49,20 +50,27 @@ public class OrderService {
             orderItem.setProduct(product);
             orderItem.setPrice(product.getPrice());
         });
-        return orderRepository.save(order);
+        return new DataResponse() {{
+            put("order", order);
+        }};
     }
 
-    public List<Order> list() {
-        return orderRepository.findAll();
+    public DataResponse list(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+        return new DataResponse() {{
+            put("orders", orderPage.getContent());
+            put("total", orderPage.getTotalElements());
+        }};
     }
 
-    public Order read(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + orderId + "' 的订单不存在"));
+    public DataResponse read(Long orderId) {
+        return new DataResponse() {{
+            put("order", OrderService.this.get(orderId));
+        }};
     }
 
-    public Order update(Long orderId, Order order) {
-        Order oldOrder = read(orderId);
+    public DataResponse update(Long orderId, Order order) {
+        Order oldOrder = get(orderId);
         if (order.getShipmentTime() != null && oldOrder.getShipmentTime() == null) {
             oldOrder.setShipmentTime(order.getShipmentTime());
         }
@@ -73,10 +81,18 @@ public class OrderService {
             }
             oldOrder.setDeliveryTime(order.getDeliveryTime());
         }
-        return orderRepository.save(oldOrder);
+        return new DataResponse() {{
+            put("order", orderRepository.save(oldOrder));
+        }};
     }
 
     public void delete(Long orderId) {
-        orderRepository.delete(read(orderId));
+        orderRepository.delete(get(orderId));
     }
+
+    public Order get(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + orderId + "' 的订单不存在"));
+    }
+
 }

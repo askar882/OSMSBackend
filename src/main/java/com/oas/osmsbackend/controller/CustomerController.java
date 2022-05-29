@@ -6,7 +6,6 @@ import com.oas.osmsbackend.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/customers")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "客户控制器", description = "处理管理客户的请求")
 public class CustomerController {
     private final CustomerService customerService;
@@ -44,7 +42,6 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取客户")
     public DataResponse list(Pageable pageable) {
-        log.debug("pageable: '{}'", pageable);
         return customerService.list(pageable);
     }
 

@@ -3,12 +3,14 @@ package com.oas.osmsbackend.service;
 import com.oas.osmsbackend.entity.Dealer;
 import com.oas.osmsbackend.exception.ResourceNotFoundException;
 import com.oas.osmsbackend.repository.DealerRepository;
+import com.oas.osmsbackend.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
-import java.util.List;
 
 /**
  * 经销商服务。
@@ -22,21 +24,28 @@ import java.util.List;
 public class DealerService {
     private final DealerRepository dealerRepository;
 
-    public Dealer create(Dealer dealer) {
-        return dealerRepository.save(dealer);
+    public DataResponse create(Dealer dealer) {
+        return new DataResponse() {{
+            put("dealer", dealerRepository.save(dealer));
+        }};
     }
 
-    public List<Dealer> list() {
-        return dealerRepository.findAll();
+    public DataResponse list(Pageable pageable) {
+        Page<Dealer> dealerPage = dealerRepository.findAll(pageable);
+        return new DataResponse() {{
+            put("dealers", dealerPage.getContent());
+            put("total", dealerPage.getTotalElements());
+        }};
     }
 
-    public Dealer read(Long dealerId) {
-        return dealerRepository.findById(dealerId)
-                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + dealerId + "' 的经销商不存在"));
+    public DataResponse read(Long dealerId) {
+        return new DataResponse() {{
+            put("dealer", DealerService.this.get(dealerId));
+        }};
     }
 
-    public Dealer update(Long dealerId, Dealer dealer) {
-        Dealer oldDealer = read(dealerId);
+    public DataResponse update(Long dealerId, Dealer dealer) {
+        Dealer oldDealer = get(dealerId);
         if (dealer.getName() != null) {
             if (!oldDealer.getName().equals(dealer.getName())
                     && dealerRepository.findByName(dealer.getName()).isPresent()) {
@@ -53,10 +62,17 @@ public class DealerService {
         if (dealer.getAddress() != null) {
             oldDealer.setAddress(dealer.getAddress());
         }
-        return dealerRepository.save(oldDealer);
+        return new DataResponse() {{
+            put("dealer", dealerRepository.save(oldDealer));
+        }};
     }
 
     public void delete(Long dealerId) {
-        dealerRepository.delete(read(dealerId));
+        dealerRepository.delete(get(dealerId));
+    }
+
+    public Dealer get(Long dealerId) {
+        return dealerRepository.findById(dealerId)
+                .orElseThrow(() -> new ResourceNotFoundException("ID为 '" + dealerId + "' 的经销商不存在"));
     }
 }

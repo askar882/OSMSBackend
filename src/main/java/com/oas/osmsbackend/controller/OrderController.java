@@ -6,7 +6,7 @@ import com.oas.osmsbackend.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "订单控制器", description = "处理管理订单的请求")
 public class OrderController {
     private final OrderService orderService;
@@ -37,36 +36,28 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "添加订单")
     public DataResponse create(@RequestBody Order order) {
-        return new DataResponse() {{
-            put("order", orderService.create(order));
-        }};
+        return orderService.create(order);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取订单")
-    public DataResponse list() {
-        return new DataResponse() {{
-            put("orders", orderService.list());
-        }};
+    public DataResponse list(Pageable pageable) {
+        return orderService.list(pageable);
     }
 
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "获取订单数据")
     public DataResponse read(@PathVariable Long orderId) {
-        return new DataResponse() {{
-            put("order", orderService.read(orderId));
-        }};
+        return orderService.read(orderId);
     }
 
     @PutMapping("/{orderId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "更新订单")
     public DataResponse update(@PathVariable Long orderId, @RequestBody Order order) {
-        return new DataResponse() {{
-            put("order", orderService.update(orderId, order));
-        }};
+        return orderService.update(orderId, order);
     }
 
     @DeleteMapping("/{orderId}")

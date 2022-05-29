@@ -39,9 +39,8 @@ public class CustomerService {
     }
 
     public DataResponse read(Long customerId) {
-        Customer customer = get(customerId);
         return new DataResponse() {{
-            put("customer", customer);
+            put("customer", CustomerService.this.get(customerId));
         }};
     }
 
