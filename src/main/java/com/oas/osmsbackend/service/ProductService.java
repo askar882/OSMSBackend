@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 商品服务。
@@ -43,8 +45,21 @@ public class ProductService {
         }};
     }
 
-    public DataResponse list(Pageable pageable) {
-        Page<Product> productPage = productRepository.findAll(pageable);
+    /**
+     * 通过给定的条件列取数据仓库里的{@link Product}，返回分页的数据。
+     * 优先通过{@code optionalDealers}参数里的Dealer ID查询数据仓库。
+     * 如果未指定Dealer ID，则使用{@code optionalProduct}查询数据仓库。
+     * 如果前两个参数均为给定，则查询所有数据。
+     *
+     * @param optionalDealers 需要匹配的{@link Dealer} ID列表。
+     * @param optionalProduct 需要匹配的{@link Product}。
+     * @param pageable 分页信息。
+     * @return 查询到的商品的 {@link DataResponse}包裹的数据。
+     */
+    public DataResponse list(Optional<List<Long>> optionalDealers, Optional<Product> optionalProduct, Pageable pageable) {
+        Page<Product> productPage = optionalDealers.map(dealers -> productRepository.findAllByDealer_IdIn(dealers, pageable))
+                .orElseGet(() -> optionalProduct.map(p -> productRepository.findAll(Example.of(p), pageable))
+                        .orElseGet(() -> productRepository.findAll(pageable)));
         return new DataResponse() {{
             put("products", productPage.getContent());
             put("total", productPage.getTotalElements());

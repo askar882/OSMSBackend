@@ -1,8 +1,11 @@
 package com.oas.osmsbackend.repository;
 
 import com.oas.osmsbackend.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -19,4 +22,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * @return 查到的商品 {@link Product}的{@link Optional}对象。
      */
     Optional<Product> findByCode(String code);
+
+    /**
+     * 通过经销商ID列表匹配商品。
+     *
+     * @param ids 经销商ID列表。
+     * @param pageable 分页信息。
+     * @return 分页的商品。
+     */
+    @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
+    Page<Product> findAllByDealer_IdIn(Collection<Long> ids, Pageable pageable);
 }
