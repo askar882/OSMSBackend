@@ -15,6 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * 订单服务。
  *
@@ -50,8 +53,14 @@ public class OrderService {
             orderItem.setProduct(product);
             orderItem.setPrice(product.getPrice());
         });
+        // 计算订单里每种商品的费用并求和算出订单总价，总价四舍五入保留两位小数。
+        order.setTotalCost(order.getOrderItems().stream()
+                .map(item -> BigDecimal.valueOf(item.getPrice() * item.getCount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue());
         return new DataResponse() {{
-            put("order", order);
+            put("order", orderRepository.save(order));
         }};
     }
 

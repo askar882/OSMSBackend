@@ -1,7 +1,6 @@
 package com.oas.osmsbackend.entity;
 
 import com.oas.osmsbackend.entity.embeddable.OrderItem;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,8 +25,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Set;
 
@@ -68,24 +65,8 @@ public class Order {
     @Comment("收货地址")
     private String address;
 
-    @Setter(AccessLevel.NONE)
     @Comment("订单总价")
     private Double totalCost;
-
-    /**
-     * 自定义订单总价Getter，计算订单里每种商品的费用并求和算出订单总价。
-     * 计算结果保留两位小数。
-     *
-     * @return 算出的订单总价。
-     */
-    @SuppressWarnings("unused")
-    public Double getTotalCost() {
-        return this.orderItems.stream()
-                .map(item -> BigDecimal.valueOf(item.getPrice() * item.getCount()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP)
-                .doubleValue();
-    }
 
     @Builder.Default
     @Comment("运费")
