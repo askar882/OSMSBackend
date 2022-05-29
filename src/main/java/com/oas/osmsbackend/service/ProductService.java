@@ -57,7 +57,7 @@ public class ProductService {
      * @return 查询到的商品的 {@link DataResponse}包裹的数据。
      */
     public DataResponse list(Optional<List<Long>> optionalDealers, Optional<Product> optionalProduct, Pageable pageable) {
-        Page<Product> productPage = optionalDealers.map(dealers -> productRepository.findAllByDealer_IdIn(dealers, pageable))
+        Page<Product> productPage = optionalDealers.map(dealers -> productRepository.findAllByDealerIdIn(dealers, pageable))
                 .orElseGet(() -> optionalProduct.map(p -> productRepository.findAll(Example.of(p), pageable))
                         .orElseGet(() -> productRepository.findAll(pageable)));
         return new DataResponse() {{

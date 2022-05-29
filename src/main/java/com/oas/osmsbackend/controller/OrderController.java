@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 订单控制器。
@@ -42,8 +46,8 @@ public class OrderController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取订单")
-    public DataResponse list(Pageable pageable) {
-        return orderService.list(pageable);
+    public DataResponse list(@RequestParam Optional<List<Long>> customers, Optional<Order> optionalOrder, Pageable pageable) {
+        return orderService.list(customers, optionalOrder, pageable);
     }
 
     @GetMapping("/{orderId}")

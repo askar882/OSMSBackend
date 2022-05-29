@@ -30,6 +30,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * @param pageable 分页信息。
      * @return 分页的商品。
      */
-    @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
-    Page<Product> findAllByDealer_IdIn(Collection<Long> ids, Pageable pageable);
+    Page<Product> findAllByDealerIdIn(Collection<Long> ids, Pageable pageable);
 }
