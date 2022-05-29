@@ -1,9 +1,7 @@
 package com.oas.osmsbackend.entity.embeddable;
 
 import com.oas.osmsbackend.entity.Product;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.hibernate.annotations.Comment;
 
 import javax.persistence.Embeddable;
@@ -19,9 +17,7 @@ import javax.validation.constraints.NotNull;
  * @date 2022/05/18
  */
 @Embeddable
-@Getter
-@Setter
-@ToString
+@Data
 public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "product_id", updatable = false)

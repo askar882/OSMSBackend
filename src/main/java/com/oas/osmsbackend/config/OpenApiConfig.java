@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class OpenApiConfig {
     @Bean
-    public OpenAPI openAPI(AppConfiguration appConfiguration) {
+    public OpenAPI openApi(AppConfiguration appConfiguration) {
         return new OpenAPI()
                 .info(new Info()
                         .title("OSMS API")
