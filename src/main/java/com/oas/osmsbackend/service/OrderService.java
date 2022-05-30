@@ -69,18 +69,18 @@ public class OrderService {
     /**
      * 通过给定的条件列取数据仓库里的{@link Order}，返回分页的数据。
      * 优先通过{@code optionalCustomers}参数里的Customer ID查询数据仓库。
-     * 如果未指定Customer ID，则使用{@code optionalOrder}查询数据仓库。
-     * 如果前两个参数均为给定，则查询所有数据。
+     * 如果未指定Customer ID，则使用{@code order}查询数据仓库。
+     * 如果请求参数不包含{@link Order}类的任何属性，则查询所有数据。
      *
      * @param optionalCustomers 需要匹配的{@link Customer} ID列表。
-     * @param optionalOrder 需要匹配的{@link Order}。
+     * @param order 需要匹配的{@link Order}。
      * @param pageable 分页信息。
      * @return 查询到的商品的 {@link DataResponse}包裹的数据。
      */
-    public DataResponse list(Optional<List<Long>> optionalCustomers, Optional<Order> optionalOrder, Pageable pageable) {
+    public DataResponse list(Optional<List<Long>> optionalCustomers, Order order, Pageable pageable) {
+        log.debug("List orders: customers: '{}', order: '{}', pageable: '{}'.", optionalCustomers, order, pageable);
         Page<Order> orderPage = optionalCustomers.map(customers -> orderRepository.findAllByCustomerIdIn(customers, pageable))
-                .orElseGet(() -> optionalOrder.map(order -> orderRepository.findAll(Example.of(order), pageable))
-                        .orElseGet(() -> orderRepository.findAll(pageable)));
+                .orElseGet(() -> orderRepository.findAll(Example.of(order), pageable));
         return new DataResponse() {{
             put("orders", orderPage.getContent());
             put("total", orderPage.getTotalElements());

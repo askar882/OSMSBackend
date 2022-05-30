@@ -68,9 +68,8 @@ public class Order {
     @Comment("订单总价")
     private Double totalCost;
 
-    @Builder.Default
     @Comment("运费")
-    private Double shippingCost = 0.0;
+    private Double shippingCost;
 
     @Comment("下单时间")
     private Date orderTime;

@@ -48,18 +48,18 @@ public class ProductService {
     /**
      * 通过给定的条件列取数据仓库里的{@link Product}，返回分页的数据。
      * 优先通过{@code optionalDealers}参数里的Dealer ID查询数据仓库。
-     * 如果未指定Dealer ID，则使用{@code optionalProduct}查询数据仓库。
-     * 如果前两个参数均为给定，则查询所有数据。
+     * 如果未指定Dealer ID，则使用{@code product}查询数据仓库。
+     * 如果请求参数不包含{@link Product}类的任何属性，则查询所有数据。
      *
      * @param optionalDealers 需要匹配的{@link Dealer} ID列表。
-     * @param optionalProduct 需要匹配的{@link Product}。
-     * @param pageable 分页信息。
+     * @param product         需要匹配的{@link Product}。
+     * @param pageable        分页信息。
      * @return 查询到的商品的 {@link DataResponse}包裹的数据。
      */
-    public DataResponse list(Optional<List<Long>> optionalDealers, Optional<Product> optionalProduct, Pageable pageable) {
+    public DataResponse list(Optional<List<Long>> optionalDealers, Product product, Pageable pageable) {
+        log.debug("List products: optionalDealers: '{}', product: '{}', pageable: '{}'.", optionalDealers, product, pageable);
         Page<Product> productPage = optionalDealers.map(dealers -> productRepository.findAllByDealerIdIn(dealers, pageable))
-                .orElseGet(() -> optionalProduct.map(p -> productRepository.findAll(Example.of(p), pageable))
-                        .orElseGet(() -> productRepository.findAll(pageable)));
+                .orElseGet(() -> productRepository.findAll(Example.of(product), pageable));
         return new DataResponse() {{
             put("products", productPage.getContent());
             put("total", productPage.getTotalElements());

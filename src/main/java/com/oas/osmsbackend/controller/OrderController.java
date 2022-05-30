@@ -46,8 +46,8 @@ public class OrderController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取订单")
-    public DataResponse list(@RequestParam Optional<List<Long>> customers, Optional<Order> optionalOrder, Pageable pageable) {
-        return orderService.list(customers, optionalOrder, pageable);
+    public DataResponse list(@RequestParam Optional<List<Long>> customers, Order order, Pageable pageable) {
+        return orderService.list(customers, order, pageable);
     }
 
     @GetMapping("/{orderId}")

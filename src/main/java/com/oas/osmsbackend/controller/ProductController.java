@@ -45,8 +45,8 @@ public class ProductController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "列取商品")
-    public DataResponse list(@RequestParam Optional<List<Long>> dealers, Optional<Product> optionalProduct, Pageable pageable) {
-        return productService.list(dealers, optionalProduct, pageable);
+    public DataResponse list(@RequestParam Optional<List<Long>> dealers, Product product, Pageable pageable) {
+        return productService.list(dealers, product, pageable);
     }
 
     @GetMapping("/{productId}")
