@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +53,10 @@ public class StatisticsService {
             case "products":
                 return new DataResponse() {{
                     put("products", slice.apply(productsMarketShare()));
+                }};
+            case "orderStates":
+                return new DataResponse() {{
+                    put("states", orderState());
                 }};
             default:
                 throw new ResourceNotFoundException("未找到指定的资源");
@@ -142,5 +147,31 @@ public class StatisticsService {
                     return 0;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 统计订单状态。
+     *
+     * @return 三种订单状态与其相对应的订单个数组成的 {@link Map}对象。
+     */
+    public Map<String, Long> orderState() {
+        Long[] stateCount = new Long[] {0L, 0L, 0L};
+        List<Order> orders = orderRepository.findAll();
+        if (!CollectionUtils.isEmpty(orders)) {
+            orders.forEach(order -> {
+                if (order.getDeliveryTime() != null) {
+                    stateCount[2]++;
+                } else if (order.getShipmentTime() != null) {
+                    stateCount[1]++;
+                } else {
+                    stateCount[0]++;
+                }
+            });
+        }
+        return new HashMap<String, Long>() {{
+            put("ordered", stateCount[0]);
+            put("shipping", stateCount[1]);
+            put("delivered", stateCount[2]);
+        }};
     }
 }

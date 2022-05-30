@@ -89,8 +89,6 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Bean
     public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
-        return resolver -> {
-            resolver.setFallbackPageable(Pageable.unpaged());
-        };
+        return resolver -> resolver.setFallbackPageable(Pageable.unpaged());
     }
 }
