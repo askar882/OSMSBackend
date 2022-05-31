@@ -26,7 +26,7 @@ public class RestExceptionHandlerTest {
     public void testRequestBodyMissing() throws Exception {
         mockMvc.perform(post("/auth/login"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", containsString("Required request body is missing")))
+                .andExpect(jsonPath("$.error.message", containsString("Required request body is missing")))
                 .andDo(result -> log.debug(result.getResponse().getContentAsString()));
     }
 }

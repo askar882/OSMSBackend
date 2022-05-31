@@ -3,26 +3,19 @@ package com.oas.osmsbackend;
 import com.oas.osmsbackend.entity.User;
 import com.oas.osmsbackend.enums.Role;
 import com.oas.osmsbackend.repository.UserRepository;
-import com.oas.osmsbackend.response.DataResponse;
-import com.oas.osmsbackend.util.JsonUtil;
+import com.oas.osmsbackend.security.RedisStore;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
+import org.mockito.Mockito;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * 身份认证辅助类。
@@ -68,30 +61,23 @@ public class AuthHelper {
     }
 
     /**
-     * 执行登录操作并返回获取的token。
+     * 模拟Token验证。
      *
-     * @param mockMvc  执行登录的{@link MockMvc}实例。
-     * @param username 登录的用户名。
-     * @return 获取的token。
+     * @param redisStore 校验Token的{@link RedisStore} Mock对象。
      */
-    public static Optional<String> mockLogin(MockMvc mockMvc, String username) throws Exception {
-        Map<String, String> credentials = new HashMap<String, String>() {{
-            put("username", username);
-            put("password", username);
-        }};
-        log.debug("Perform login with mock MVC with credentials: '{}'.", credentials);
-        return JsonUtil.INSTANCE.fromJson(
-                        mockMvc.perform(
-                                        post("/auth/login")
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .characterEncoding(StandardCharsets.UTF_8)
-                                                .content(JsonUtil.INSTANCE.toJson(credentials, false)))
-                                .andExpect(status().isCreated())
-                                .andReturn()
-                                .getResponse()
-                                .getContentAsString(),
-                        DataResponse.class,
-                        true)
-                .map(data -> (String) data.get("token"));
+    public static void mockLogin(RedisStore redisStore) {
+        Mockito.doAnswer(invocation -> {
+            String username = (String) invocation.getArguments()[0];
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.USER);
+            if (ADMIN_USER.equals(username)) {
+                roles.add(Role.ADMIN);
+            }
+            return Optional.of(User.builder()
+                    .username(username)
+                    .password(username)
+                    .roles(roles)
+                    .build());
+        }).when(redisStore).getUser(Mockito.any());
     }
 }

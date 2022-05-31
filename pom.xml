@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.oas</groupId>
     <artifactId>OSMSBackend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>OSMSBackend</name>
     <description>智慧云平台运营服务管理系统</description>
     <properties>
