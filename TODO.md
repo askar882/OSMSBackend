@@ -1,18 +1,23 @@
 # TODO
-## Logging
-### User Activities
+- [ ] ## Logging
+
+- [ ] ### User Activities
+
 Log all user activities. 
 Reref to: [How To Log Online User Activity In Spring Boot Applications](https://roytuts.com/how-to-log-online-user-activity-in-spring-boot-applications/)
 
-### Log Created User
+- [ ] ### Log Created User
+
 Add foreign keys to `Customer`, `Dealer`, `Product`, `Order` referencing the created user.
 
-## Replace Annotation
+- [ ] ## Replace Annotation
+
 Remove all redundant custom annotations.
 
-## Batch Operations
+- [ ] ## Batch Operations
+
 Add batch operations for `Customer`, `Dealer`, `Product` and `Order`.
 
-### Pagination
-Add pagination to `list` calls.
+- [x] ## Pagination
 
+Add pagination to `list` calls.
