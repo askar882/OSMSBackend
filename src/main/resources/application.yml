@@ -20,6 +20,8 @@ spring:
     redis:
       repositories:
         enabled: false
+  redis:
+    host: ${REDIS_HOST:localhost}
 logging:
   level:
     org.springframework: INFO
