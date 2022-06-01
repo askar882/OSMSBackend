@@ -49,6 +49,8 @@ RUN mvn package -Dmaven.test.skip
 # 部署
 FROM openjdk:8-jre-slim AS production
 
+LABEL author=askar882
+
 ARG VERSION
 ENV VERSION=${VERSION:-1.0.0-SNAPSHOT}
 
